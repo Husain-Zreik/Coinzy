@@ -45,8 +45,14 @@ public class Login extends javax.swing.JFrame {
         Right.setBackground(new java.awt.Color(0, 102, 102));
         Right.setPreferredSize(new java.awt.Dimension(400, 500));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/logo.png"))); // NOI18N
-
+        // jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("../Icon/logo.png"))); // NOI18N
+        java.net.URL logoURL = getClass().getResource("/Icon/logo.png");
+        if (logoURL != null) {
+            jLabel5.setIcon(new javax.swing.ImageIcon(logoURL));
+        } else {
+            System.err.println("Icon resource not found: /Icon/logo.png");
+        }
+        
         jLabel6.setFont(new java.awt.Font("Segoe Script", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Finance Mangement");
