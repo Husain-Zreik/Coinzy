@@ -344,10 +344,8 @@ public class HomePage extends javax.swing.JFrame {
                 refreshButtonMouseExited(evt);
             }
         });
-        refreshButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshButtonActionPerformed(evt);
-            }
+        refreshButton.addActionListener((java.awt.event.ActionEvent evt) -> {
+            refreshButtonActionPerformed(evt);
         });
         jPanel1.add(refreshButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 10, 30, 40));
 
@@ -1177,14 +1175,7 @@ public class HomePage extends javax.swing.JFrame {
         }
     }// GEN-LAST:event_jButton2ActionPerformed
 
-    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBox3ActionPerformed
-
-    }// GEN-LAST:event_jComboBox3ActionPerformed
-
     // GEN-LAST:event_ExpenseAddButtonActionPerformed
-
-    private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextField9ActionPerformed
-    }// GEN-LAST:event_jTextField9ActionPerformed
 
     private void addIncomeSourceActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addIncomeSourceActionPerformed
         // Get the income source name from the input field
@@ -1416,9 +1407,6 @@ public class HomePage extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBox1ActionPerformed
     }// GEN-LAST:event_jComboBox1ActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBox2ActionPerformed
-    }// GEN-LAST:event_jComboBox2ActionPerformed
-
     private void incomeSourceComboBoxActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_incomeSourceComboBoxActionPerformed
     }// GEN-LAST:event_incomeSourceComboBoxActionPerformed
 
@@ -1636,26 +1624,24 @@ public class HomePage extends javax.swing.JFrame {
             String query = "SELECT account_type FROM accounts WHERE user_id = ?";
             try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
                 pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    jComboBox1.removeAllItems();
+                    expenseAccountName.removeAllItems();
+                    incomeAccountName.removeAllItems();
 
-                ResultSet rs = pstmt.executeQuery();
+                    jComboBox1.addItem("--select--");
+                    expenseAccountName.addItem("--select--");
+                    incomeAccountName.addItem("--select--");
 
-                jComboBox1.removeAllItems();
-                expenseAccountName.removeAllItems();
-                incomeAccountName.removeAllItems();
-
-                jComboBox1.addItem("--select--");
-                expenseAccountName.addItem("--select--");
-                incomeAccountName.addItem("--select--");
-
-                while (rs.next()) {
-                    String accountName = rs.getString("account_type");
-                    jComboBox1.addItem(accountName);
-                    expenseAccountName.addItem(accountName);
-                    incomeAccountName.addItem(accountName);
+                    while (rs.next()) {
+                        String accountName = rs.getString("account_type");
+                        jComboBox1.addItem(accountName);
+                        expenseAccountName.addItem(accountName);
+                        incomeAccountName.addItem(accountName);
+                    }
                 }
-
-                rs.close();
-            } // Assuming userId is accessible from UserSession
+            } // Assuming userId is accessible from UserSession // Assuming userId is
+              // accessible from UserSession
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -1700,23 +1686,23 @@ public class HomePage extends javax.swing.JFrame {
 
             String query;
             query = "SELECT account_type, balance, liabilities FROM accounts WHERE user_id = ?";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
 
-            ResultSet rs = pstmt.executeQuery();
+                ResultSet rs = pstmt.executeQuery();
 
-            // Iterate over the ResultSet and add data to the table model
-            while (rs.next()) {
-                String accountName = rs.getString("account_type");
-                double liabilities = rs.getDouble("liabilities");
-                double currentBalance = rs.getDouble("balance");
+                // Iterate over the ResultSet and add data to the table model
+                while (rs.next()) {
+                    String accountName = rs.getString("account_type");
+                    double liabilities = rs.getDouble("liabilities");
+                    double currentBalance = rs.getDouble("balance");
 
-                // Add a row to the table model with both liabilities and currentBalance
-                model.addRow(new Object[] { accountName, currentBalance, liabilities });
-            }
+                    // Add a row to the table model with both liabilities and currentBalance
+                    model.addRow(new Object[] { accountName, currentBalance, liabilities });
+                }
 
-            rs.close();
-            pstmt.close();
+                rs.close();
+            } // Assuming userId is accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "An error occurred while populating the table: " + ex.getMessage());
         }
@@ -1765,7 +1751,7 @@ public class HomePage extends javax.swing.JFrame {
 
             String query = "SELECT i.income_date, i.income_source, i.amount, a.account_type " +
                     "FROM incomes i " +
-                    "INNER JOIN accounts a ON i.account_id = a.account_id " +
+                    "INNER JOIN accounts a ON i.account_id = a.id " +
                     "WHERE i.user_id = ? order by i.income_date desc";
             try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
                 pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
@@ -1797,7 +1783,7 @@ public class HomePage extends javax.swing.JFrame {
         try {
             String query = "SELECT e.expense_date, e.expense_category, e.amount, e.remark, a.account_type " +
                     "FROM expenses e " +
-                    "INNER JOIN accounts a ON e.account_id = a.account_id " +
+                    "INNER JOIN accounts a ON e.account_id = a.id " +
                     "WHERE e.user_id = ? order by e.expense_date desc";
             try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
                 pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
@@ -1880,7 +1866,7 @@ public class HomePage extends javax.swing.JFrame {
         model.setRowCount(0); // Clear previous data from the table
 
         try {
-            String query = "SELECT t.transaction_id, t.type, t.amount, t.statement, t.time, a.account_type " +
+            String query = "SELECT t.id, t.type, t.amount, t.statement, t.time, a.account_type " +
                     "FROM transactions t " +
                     "INNER JOIN accounts a ON t.account_id = a.id " +
                     "WHERE a.user_id = ? order by t.time desc";
@@ -1915,7 +1901,7 @@ public class HomePage extends javax.swing.JFrame {
 
             // Query to retrieve distinct expense categories from the budget table for the
             // current user
-            String query = "SELECT DISTINCT expense_categories FROM budget WHERE user_id = ?";
+            String query = "SELECT DISTINCT expense_category FROM budgets WHERE user_id = ?";
             try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
                 pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
                 // Clear existing items in the removeBudgetComboBox
