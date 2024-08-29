@@ -15,12 +15,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class PasswordException extends Exception {
+
     public PasswordException(String message) {
         super(message);
     }
 }
 
 public class SignUp extends javax.swing.JFrame {
+
     public SignUp() {
         initComponents();
     }
@@ -281,12 +283,15 @@ public class SignUp extends javax.swing.JFrame {
             // Check if any of the fields are empty
             if (name1.isEmpty() || username1.isEmpty() || password1.isEmpty()) {
                 String errorMessage = "Please fill in the following field(s):";
-                if (name1.isEmpty())
+                if (name1.isEmpty()) {
                     errorMessage += "\n- Name";
-                if (username1.isEmpty())
+                }
+                if (username1.isEmpty()) {
                     errorMessage += "\n- Username";
-                if (password1.isEmpty())
+                }
+                if (password1.isEmpty()) {
                     errorMessage += "\n- Password";
+                }
                 JOptionPane.showMessageDialog(null, errorMessage);
                 return;
             }
@@ -295,7 +300,7 @@ public class SignUp extends javax.swing.JFrame {
             passwordRestrictions(password1);
 
             // Check if the username already exists in the database
-            String query = "SELECT * FROM user WHERE username = ?";
+            String query = "SELECT * FROM users WHERE username = ?";
             PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
             pstmt.setString(1, username1);
             ResultSet rs = pstmt.executeQuery();
@@ -306,7 +311,7 @@ public class SignUp extends javax.swing.JFrame {
 
             // If username doesn't exist and password meets restrictions, proceed with
             // insertion
-            query = "INSERT INTO user(name, username, password) VALUES (?, ?, ?)";
+            query = "INSERT INTO users(name, username, password) VALUES (?, ?, ?)";
             pstmt = DatabaseManager.getConnection().prepareStatement(query);
             pstmt.setString(1, name1);
             pstmt.setString(2, username1);

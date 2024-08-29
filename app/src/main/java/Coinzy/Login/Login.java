@@ -2,10 +2,10 @@
 package Coinzy.Login;
 
 import javax.swing.JOptionPane;
-import java.sql.DriverManager;
 import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import Coinzy.Database.DatabaseManager;
 import Coinzy.Home.HomePage;
@@ -45,14 +45,15 @@ public class Login extends javax.swing.JFrame {
         Right.setBackground(new java.awt.Color(0, 102, 102));
         Right.setPreferredSize(new java.awt.Dimension(400, 500));
 
-        // jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("../Icon/logo.png"))); // NOI18N
+        // jLabel5.setIcon(new
+        // javax.swing.ImageIcon(getClass().getResource("../Icon/logo.png"))); // NOI18N
         java.net.URL logoURL = getClass().getResource("/Icon/logo.png");
         if (logoURL != null) {
             jLabel5.setIcon(new javax.swing.ImageIcon(logoURL));
         } else {
             System.err.println("Icon resource not found: /Icon/logo.png");
         }
-        
+
         jLabel6.setFont(new java.awt.Font("Segoe Script", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Finance Mangement");
@@ -200,48 +201,74 @@ public class Login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }// GEN-LAST:event_passwordActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        SignUp SignUpFrame = new SignUp();
-        SignUpFrame.setVisible(true);
-        SignUpFrame.pack();
-        SignUpFrame.setLocationRelativeTo(null);
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+        SignUp signUpFrame = new SignUp();
+        signUpFrame.setVisible(true);
+        signUpFrame.pack();
+        signUpFrame.setLocationRelativeTo(null);
         this.dispose();
-    }// GEN-LAST:event_jButton2ActionPerformed
+    }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        // login code
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         var user_id = username.getText();
-        var pass = password.getText();
+        var pass = String.valueOf(password.getPassword()); // Safely get the password
 
-        if (user_id.isEmpty() || pass.isEmpty()) {
+        if (user_id == null || user_id.isEmpty() || pass == null || pass.isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, "Please fill in both username and password fields.");
             return;
         }
 
-        try {
-            DatabaseManager.connect();
-            ResultSet rs = DatabaseManager.executeQuery(
-                    "SELECT * FROM user WHERE username = '" + user_id + "' AND password = '" + pass + "'");
-            if (rs.next()) {
-                JOptionPane.showMessageDialog(null,
-                        "Welcome " + user_id + " to Finance Management \n You have Successfully logged in ");
-                UserSession s = new UserSession();
-                s.userId = rs.getInt("user_id");
-                HomePage HomePageFrame = new HomePage();
-                HomePageFrame.setVisible(true);
-                HomePageFrame.pack();
-                HomePageFrame.setLocationRelativeTo(null);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "Login Unsuccessful!!");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(rootPane, e);
+        if (attemptLogin(user_id, pass)) {
+            UserSession s = new UserSession();
+            s.userId = getUserId(user_id); // Assuming getUserId is a method that retrieves the user ID
+            HomePage homePageFrame = new HomePage();
+            homePageFrame.setVisible(true);
+            homePageFrame.pack();
+            homePageFrame.setLocationRelativeTo(null);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Login Unsuccessful!!");
         }
+    }
 
-    }// GEN-LAST:event_jButton1ActionPerformed
+    private boolean attemptLogin(String username, String password) {
+        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+        try (Connection con = DatabaseManager.getConnection();
+                PreparedStatement pstmt = con.prepareStatement(query)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, password); // Consider hashing the password before comparing
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(null,
+                            "Welcome " + username + " to Finance Management \nYou have Successfully logged in");
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(rootPane, e.getMessage());
+        }
+        return false;
+    }
+
+    private int getUserId(String username) {
+        String query = "SELECT id FROM users WHERE username = ?";
+        try (Connection con = DatabaseManager.getConnection();
+                PreparedStatement pstmt = con.prepareStatement(query)) {
+
+            pstmt.setString(1, username);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(rootPane, e.getMessage());
+        }
+        return -1;
+    }
 
     public static void main(String args[]) {
         // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
@@ -270,11 +297,8 @@ public class Login extends javax.swing.JFrame {
         }
         // </editor-fold>
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Login().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
