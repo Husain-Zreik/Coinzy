@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Coinzy.Database;
 
-/**
- *
- * @author admin
- */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -15,23 +7,33 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:mysql://localhost:3306/pfmsdemo";
-    private static final String USER = "Onkar";
-    private static final String PASSWORD = "Prem@1234";
+    private static final String URL = "jdbc:mysql://localhost:3306/coinzy_db";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
 
     private static Connection connection;
-    private static Statement statement;
+
+    // Private constructor to prevent instantiation
+    private DatabaseManager() {}
 
     public static Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();  // Attempt to connect if connection is null or closed
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return connection;
     }
 
     public static void connect() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connected to the database");
-
+            if (connection == null || connection.isClosed()) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("Connected to the database");
+            }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -39,13 +41,36 @@ public class DatabaseManager {
 
     public static ResultSet executeQuery(String query) {
         ResultSet resultSet = null;
+        Statement statement = null;
         try {
-            Statement statement = connection.createStatement();
+            if (connection == null || connection.isClosed()) {
+                connect();  // Ensure connection is established before executing query
+            }
+            statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // Close the Statement after the ResultSet is fully used
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return resultSet;
     }
 
+    public static void close() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                System.out.println("Database connection closed");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
