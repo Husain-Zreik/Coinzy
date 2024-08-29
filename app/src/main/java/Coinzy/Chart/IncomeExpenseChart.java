@@ -1,15 +1,20 @@
 package Coinzy.Chart;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.swing.JFrame; // Import TreeMap to sort the data
+
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.SwingWrapper;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap; // Import TreeMap to sort the data
+
 import Coinzy.Database.DatabaseManager;
 import Coinzy.Database.UserSession;
-import javax.swing.JFrame;
 
 public class IncomeExpenseChart {
 
@@ -23,7 +28,7 @@ public class IncomeExpenseChart {
         Map<String, Integer> monthlyIncome = new TreeMap<>();
         DatabaseManager.connect();
         String query = "SELECT monthname(income_date) AS month, SUM(amount) AS income " +
-                "FROM income " +
+                "FROM incomes " +
                 "WHERE user_id = ? " +
                 "GROUP BY month";
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
@@ -46,7 +51,7 @@ public class IncomeExpenseChart {
         Map<String, Integer> monthlyExpenses = new TreeMap<>();
         DatabaseManager.connect();
         String query = "SELECT monthname(expense_date) AS month, SUM(amount) AS expense " +
-                "FROM expense " +
+                "FROM expenses " +
                 "WHERE user_id = ? " +
                 "GROUP BY month";
         try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {

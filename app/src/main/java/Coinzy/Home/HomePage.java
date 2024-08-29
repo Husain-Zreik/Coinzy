@@ -1,37 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Coinzy.Home;
 
-import Coinzy.Login.Login;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import javax.swing.JOptionPane;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import Coinzy.Database.UserSession;
 import javax.swing.table.DefaultTableModel;
 import Coinzy.Database.DatabaseManager;
-import java.awt.event.ActionEvent;
-import java.util.Date;
 import Coinzy.Chart.IncomeExpenseChart;
-import java.util.ArrayList;
-import java.util.List;
+import Coinzy.Database.UserSession;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import Coinzy.Login.Login;
+import java.util.Date;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- *
- * @author Lenovo
- */
 public class HomePage extends javax.swing.JFrame {
+    private static final Logger logger = Logger.getLogger(HomePage.class.getName());
+
     UserSession s;
 
-    /**
-     * Creates new form HomePage
-     */
     public HomePage() {
         this.s = new UserSession();
         initComponents();
@@ -935,11 +922,9 @@ public class HomePage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void balanceLabelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_balanceLabelActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_balanceLabelActionPerformed
 
     private void nBudgetButtonMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_nBudgetButtonMouseClicked
-        // TODO add your handling code here:
         nBudgetButton.setBackground(new java.awt.Color(0, 68, 68));
         jToggleButton3.setSelected(false);
         jToggleButton2.setSelected(false);
@@ -949,50 +934,40 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_nBudgetButtonMouseClicked
 
     private void nBudgetButtonMouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_nBudgetButtonMouseEntered
-        // TODO add your handling code here:
         nBudgetButton.setBackground(new java.awt.Color(0, 68, 68));
     }// GEN-LAST:event_nBudgetButtonMouseEntered
 
     private void nBudgetButtonMouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_nBudgetButtonMouseExited
-        // TODO add your handling code here:
         nBudgetButton.setBackground(new java.awt.Color(0, 102, 102));
     }// GEN-LAST:event_nBudgetButtonMouseExited
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jToggleButton3ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jToggleButton3ActionPerformed
 
     private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jToggleButton5ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jToggleButton5ActionPerformed
 
     private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_refreshButtonMouseClicked
-        // TODO add your handling code here:
     }// GEN-LAST:event_refreshButtonMouseClicked
 
     private void refreshButtonMouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_refreshButtonMouseEntered
-        // TODO add your handling code here:
     }// GEN-LAST:event_refreshButtonMouseEntered
 
     private void refreshButtonMouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_refreshButtonMouseExited
-        // TODO add your handling code here:
     }// GEN-LAST:event_refreshButtonMouseExited
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_refreshButtonActionPerformed
-        // TODO add your handling code here:
         updateComponents();
         JOptionPane.showMessageDialog(null, "Everything has been refreshed!");
         refreshButton.setSelected(false);
     }// GEN-LAST:event_refreshButtonActionPerformed
 
     private void addBudgetExpenseCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addBudgetExpenseCategoryButtonActionPerformed
-        // TODO add your handling code here:
         String expenseCategory = BudgetExpenseCategoryTextField.getText().trim();
         addExpenseCategoryFunction(expenseCategory);
     }// GEN-LAST:event_addBudgetExpenseCategoryButtonActionPerformed
 
     private void addBudgetActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addBudgetActionPerformed
-        // TODO add your handling code here:
         String expenseCategory = BudgetExpenseCategoryComboBox.getSelectedItem().toString();
         String budgetAmountText = BudgetAmount.getText();
 
@@ -1038,7 +1013,6 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_addBudgetActionPerformed
 
     private void addTargetAmountButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addTargetAmountButtonActionPerformed
-        // TODO add your handling code here:
         String targetAmountText = targetAmountTextField.getText();
 
         // Check if the target amount is provided
@@ -1051,44 +1025,45 @@ public class HomePage extends javax.swing.JFrame {
 
                 // Check if a target amount already exists for the user
                 String checkExistingQuery = "SELECT COUNT(*) AS count FROM target_amount WHERE user_id = ?";
-                PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkExistingQuery);
-                checkStmt.setInt(1, UserSession.userId);
-                ResultSet existingResult = checkStmt.executeQuery();
-                existingResult.next();
-                int count = existingResult.getInt("count");
-                checkStmt.close();
+                int count;
+                try (PreparedStatement checkStmt = DatabaseManager.getConnection()
+                        .prepareStatement(checkExistingQuery)) {
+                    checkStmt.setInt(1, UserSession.userId);
+                    ResultSet existingResult = checkStmt.executeQuery();
+                    existingResult.next();
+                    count = existingResult.getInt("count");
+                }
 
                 // Prepare the SQL statement based on whether the target amount exists or not
                 String sqlQuery;
                 if (count > 0) {
-                    sqlQuery = "UPDATE target_amount SET amount = ? WHERE user_id = ?";
+                    sqlQuery = "UPDATE target_amounts SET amount = ? WHERE user_id = ?";
                 } else {
-                    sqlQuery = "INSERT INTO target_amount(user_id, amount) VALUES (?, ?)";
+                    sqlQuery = "INSERT INTO target_amounts(user_id, amount) VALUES (?, ?)";
                 }
 
-                // Execute the SQL statement
-                PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sqlQuery);
-                if (count > 0) {
-                    pstmt.setDouble(1, amount); // Set the target amount
-                    pstmt.setInt(2, UserSession.userId); // Set user_id
-                } else {
-                    pstmt.setInt(1, UserSession.userId); // Set user_id
-                    pstmt.setDouble(2, amount); // Set the target amount
+                try ( // Execute the SQL statement
+                        PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(sqlQuery)) {
+                    if (count > 0) {
+                        pstmt.setDouble(1, amount); // Set the target amount
+                        pstmt.setInt(2, UserSession.userId); // Set user_id
+                    } else {
+                        pstmt.setInt(1, UserSession.userId); // Set user_id
+                        pstmt.setDouble(2, amount); // Set the target amount
+                    }
+
+                    // Execute the statement
+                    int rowsAffected = pstmt.executeUpdate();
+
+                    // Check if the operation was successful
+                    if (rowsAffected > 0) {
+                        JOptionPane.showMessageDialog(null, "Target amount recorded successfully!");
+                        targetAmountTextField.setText(""); // Clear the input field
+                        updateComponents(); // Update other components if needed
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to record target amount.");
+                    }
                 }
-
-                // Execute the statement
-                int rowsAffected = pstmt.executeUpdate();
-
-                // Check if the operation was successful
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(null, "Target amount recorded successfully!");
-                    targetAmountTextField.setText(""); // Clear the input field
-                    updateComponents(); // Update other components if needed
-                } else {
-                    JOptionPane.showMessageDialog(null, "Failed to record target amount.");
-                }
-
-                pstmt.close();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Please enter a valid target amount (numbers only).");
             } catch (SQLException ex) {
@@ -1100,28 +1075,26 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_addTargetAmountButtonActionPerformed
 
     private void removeBudgetButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_removeBudgetButtonActionPerformed
-        // TODO add your handling code here:
         String budgetCategory = (String) removeBudgetComboBox.getSelectedItem();
 
         if (budgetCategory != null && !budgetCategory.equals("--select--")) {
             try {
                 DatabaseManager.connect();
 
-                String query = "DELETE FROM budget WHERE expense_category = ? AND user_id = ?";
-                PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-                pstmt.setString(1, budgetCategory);
-                pstmt.setInt(2, UserSession.userId);
+                String query = "DELETE FROM budgets WHERE expense_category = ? AND user_id = ?";
+                try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                    pstmt.setString(1, budgetCategory);
+                    pstmt.setInt(2, UserSession.userId);
 
-                int rowsDeleted = pstmt.executeUpdate();
-                if (rowsDeleted > 0) {
-                    JOptionPane.showMessageDialog(null, "Budget deleted successfully!");
-                    // Optionally, update other components or UI elements related to budgets
-                    updateComponents(); // Update other components if needed
-                } else {
-                    JOptionPane.showMessageDialog(null, "Failed to delete budget.");
+                    int rowsDeleted = pstmt.executeUpdate();
+                    if (rowsDeleted > 0) {
+                        JOptionPane.showMessageDialog(null, "Budget deleted successfully!");
+                        // Optionally, update other components or UI elements related to budgets
+                        updateComponents(); // Update other components if needed
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to delete budget.");
+                    }
                 }
-
-                pstmt.close();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, ex);
             }
@@ -1135,36 +1108,38 @@ public class HomePage extends javax.swing.JFrame {
         if (!expenseCategory.isEmpty()) {
             try {
                 DatabaseManager.connect();
-                String checkQuery = "SELECT COUNT(*) AS count FROM expense_category WHERE user_id = ? AND category_name = ?";
-                PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkQuery);
-                checkStmt.setInt(1, UserSession.userId);
-                checkStmt.setString(2, expenseCategory);
-                ResultSet rs = checkStmt.executeQuery();
+                String checkQuery = "SELECT COUNT(*) AS count FROM expense_categories WHERE user_id = ? AND category_name = ?";
+                try (PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkQuery)) {
+                    checkStmt.setInt(1, UserSession.userId);
+                    checkStmt.setString(2, expenseCategory);
+                    ResultSet rs = checkStmt.executeQuery();
 
-                if (rs.next()) {
-                    int count = rs.getInt("count");
-                    if (count > 0) {
-                        JOptionPane.showMessageDialog(null, "Expense category already exists.");
-                    } else {
-                        String insertQuery = "INSERT INTO expense_category (user_id, category_name) VALUES (?, ?)";
-                        PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(insertQuery);
-                        pstmt.setInt(1, UserSession.userId);
-                        pstmt.setString(2, expenseCategory);
-                        int rowsInserted = pstmt.executeUpdate();
-
-                        if (rowsInserted > 0) {
-                            JOptionPane.showMessageDialog(null, "Expense category added successfully!");
-                            expenseCategoryTextField.setText("");
-                            BudgetExpenseCategoryTextField.setText("");
-                            updateComponents(); // Assuming this method updates components including the expense
-                                                // categories combo box
+                    if (rs.next()) {
+                        int count = rs.getInt("count");
+                        if (count > 0) {
+                            JOptionPane.showMessageDialog(null, "Expense category already exists.");
                         } else {
-                            JOptionPane.showMessageDialog(null, "Failed to add expense category.");
+                            String insertQuery;
+                            insertQuery = "INSERT INTO expense_categories(user_id, category_name) VALUES (?, ?)";
+                            try (PreparedStatement pstmt = DatabaseManager.getConnection()
+                                    .prepareStatement(insertQuery)) {
+                                pstmt.setInt(1, UserSession.userId);
+                                pstmt.setString(2, expenseCategory);
+                                int rowsInserted = pstmt.executeUpdate();
+
+                                if (rowsInserted > 0) {
+                                    JOptionPane.showMessageDialog(null, "Expense category added successfully!");
+                                    expenseCategoryTextField.setText("");
+                                    BudgetExpenseCategoryTextField.setText("");
+                                    updateComponents(); // Assuming this method updates components including the expense
+                                    // categories combo box
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Failed to add expense category.");
+                                }
+                            }
                         }
-                        pstmt.close();
                     }
                 }
-                checkStmt.close();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error occurred while adding expense category: " + ex.getMessage());
             }
@@ -1174,13 +1149,11 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     private void addExpenseCategoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addExpenseCategoryActionPerformed
-        // TODO add your handling code here:
         String expenseCategory = expenseCategoryTextField.getText().trim();
         addExpenseCategoryFunction(expenseCategory);
     }// GEN-LAST:event_addExpenseCategoryActionPerformed
 
     private void ExpenseResetButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_ExpenseResetButtonActionPerformed
-        // TODO add your handling code here:
         expenseDate.setDate(null);
         expenseCategoryComboBox.setSelectedIndex(0);
         expenseAmount.setText("");
@@ -1189,7 +1162,6 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_ExpenseResetButtonActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
         try {
 
             // Get monthly income and expenses from the database
@@ -1201,7 +1173,7 @@ public class HomePage extends javax.swing.JFrame {
             // Generate and display the chart
             IncomeExpenseChart.generateChart(monthlyIncomeMap, monthlyExpensesMap);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "SQL error occurred :", e);
         }
     }// GEN-LAST:event_jButton2ActionPerformed
 
@@ -1212,11 +1184,9 @@ public class HomePage extends javax.swing.JFrame {
     // GEN-LAST:event_ExpenseAddButtonActionPerformed
 
     private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextField9ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jTextField9ActionPerformed
 
     private void addIncomeSourceActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addIncomeSourceActionPerformed
-        // TODO add your handling code here:
         // Get the income source name from the input field
         String incomeSourceName = incomeSourceTextField.getText().trim();
 
@@ -1224,35 +1194,37 @@ public class HomePage extends javax.swing.JFrame {
         if (!incomeSourceName.isEmpty()) {
             try {
                 DatabaseManager.connect();
-                String checkQuery = "SELECT COUNT(*) AS count FROM income_source WHERE user_id = ? AND source_name = ?";
-                PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkQuery);
-                checkStmt.setInt(1, UserSession.userId);
-                checkStmt.setString(2, incomeSourceName);
-                ResultSet rs = checkStmt.executeQuery();
+                String checkQuery = "SELECT COUNT(*) AS count FROM income_sources WHERE user_id = ? AND source_name = ?";
+                try (PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkQuery)) {
+                    checkStmt.setInt(1, UserSession.userId);
+                    checkStmt.setString(2, incomeSourceName);
+                    ResultSet rs = checkStmt.executeQuery();
 
-                if (rs.next()) {
-                    int count = rs.getInt("count");
-                    if (count > 0) {
-                        JOptionPane.showMessageDialog(null, "Income source already exists.");
-                    } else {
-                        String insertQuery = "INSERT INTO income_source (user_id, source_name) VALUES (?, ?)";
-                        PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(insertQuery);
-                        pstmt.setInt(1, UserSession.userId);
-                        pstmt.setString(2, incomeSourceName);
-                        int rowsInserted = pstmt.executeUpdate();
-
-                        if (rowsInserted > 0) {
-                            JOptionPane.showMessageDialog(null, "Income source added successfully!");
-                            incomeSourceTextField.setText("");
-                            updateComponents(); // Assuming this method updates components including the income sources
-                                                // combo box
+                    if (rs.next()) {
+                        int count = rs.getInt("count");
+                        if (count > 0) {
+                            JOptionPane.showMessageDialog(null, "Income source already exists.");
                         } else {
-                            JOptionPane.showMessageDialog(null, "Failed to add income source.");
+                            String insertQuery = "INSERT INTO income_sources (user_id, source_name) VALUES (?, ?)";
+                            try (PreparedStatement pstmt = DatabaseManager.getConnection()
+                                    .prepareStatement(insertQuery)) {
+                                pstmt.setInt(1, UserSession.userId);
+                                pstmt.setString(2, incomeSourceName);
+                                int rowsInserted = pstmt.executeUpdate();
+
+                                if (rowsInserted > 0) {
+                                    JOptionPane.showMessageDialog(null, "Income source added successfully!");
+                                    incomeSourceTextField.setText("");
+                                    updateComponents(); // Assuming this method updates components including the income
+                                                        // sources
+                                    // combo box
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Failed to add income source.");
+                                }
+                            }
                         }
-                        pstmt.close();
                     }
                 }
-                checkStmt.close();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error occurred while adding income source: " + ex.getMessage());
             }
@@ -1262,11 +1234,9 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_addIncomeSourceActionPerformed
 
     private void incomeAmountActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_incomeAmountActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_incomeAmountActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
         Login LoginFrame = new Login();
         LoginFrame.setVisible(true);
         LoginFrame.pack();
@@ -1276,12 +1246,10 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_jButton1ActionPerformed
 
     private void jToggleButton2MouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton2MouseEntered
-        // TODO add your handling code here:
         jToggleButton2.setBackground(new java.awt.Color(0, 68, 68));
     }// GEN-LAST:event_jToggleButton2MouseEntered
 
     private void jToggleButton2MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton2MouseClicked
-        // TODO add your handling code here:
         jToggleButton2.setBackground(new java.awt.Color(0, 68, 68));
         jToggleButton3.setSelected(false);
         jToggleButton4.setSelected(false);
@@ -1291,18 +1259,15 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_jToggleButton2MouseClicked
 
     private void jToggleButton2MouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton2MouseExited
-        // TODO add your handling code here:
         jToggleButton2.setBackground(new java.awt.Color(0, 102, 102));
     }// GEN-LAST:event_jToggleButton2MouseExited
 
     private void jToggleButton3MouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton3MouseEntered
-        // TODO add your handling code here:
         jToggleButton3.setBackground(new java.awt.Color(0, 68, 68));
     }// GEN-LAST:event_jToggleButton3MouseEntered
 
     private void jToggleButton3MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton3MouseClicked
-        // TODO add your handling code here:
-        System.out.println("UserID: " + s.userId);
+        System.out.println("UserID: " + UserSession.userId);
         jToggleButton3.setBackground(new java.awt.Color(0, 68, 68));
         jToggleButton2.setSelected(false);
         jToggleButton4.setSelected(false);
@@ -1312,17 +1277,14 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_jToggleButton3MouseClicked
 
     private void jToggleButton3MouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton3MouseExited
-        // TODO add your handling code here:
         jToggleButton3.setBackground(new java.awt.Color(0, 102, 102));
     }// GEN-LAST:event_jToggleButton3MouseExited
 
     private void jToggleButton4MouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton4MouseEntered
-        // TODO add your handling code here:
         jToggleButton4.setBackground(new java.awt.Color(0, 68, 68));
     }// GEN-LAST:event_jToggleButton4MouseEntered
 
     private void jToggleButton4MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton4MouseClicked
-        // TODO add your handling code here:
         jToggleButton4.setBackground(new java.awt.Color(0, 68, 68));
         jToggleButton3.setSelected(false);
         jToggleButton2.setSelected(false);
@@ -1332,12 +1294,10 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_jToggleButton4MouseClicked
 
     private void jToggleButton4MouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton4MouseExited
-        // TODO add your handling code here:
         jToggleButton4.setBackground(new java.awt.Color(0, 102, 102));
     }// GEN-LAST:event_jToggleButton4MouseExited
 
     private void jToggleButton5MouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton5MouseClicked
-        // TODO add your handling code here:
         jToggleButton5.setBackground(new java.awt.Color(0, 68, 68));
         jToggleButton3.setSelected(false);
         jToggleButton2.setSelected(false);
@@ -1347,57 +1307,49 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_jToggleButton5MouseClicked
 
     private void jToggleButton5MouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton5MouseEntered
-        // TODO add your handling code here:
         jToggleButton5.setBackground(new java.awt.Color(0, 68, 68));
     }// GEN-LAST:event_jToggleButton5MouseEntered
 
     private void jToggleButton5MouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jToggleButton5MouseExited
-        // TODO add your handling code here:
         jToggleButton5.setBackground(new java.awt.Color(0, 102, 102));
     }// GEN-LAST:event_jToggleButton5MouseExited
 
     private void jButton1MouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jButton1MouseEntered
-        // TODO add your handling code here:
         jButton1.setBackground(new java.awt.Color(0, 68, 68));
     }// GEN-LAST:event_jButton1MouseEntered
 
     private void jButton1MouseExited(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jButton1MouseExited
-        // TODO add your handling code here:
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
     }// GEN-LAST:event_jButton1MouseExited
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jToggleButton2ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void expenseAccountNameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jToggleButton2ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void deleteAccountActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_deleteAccountActionPerformed
-        // TODO add your handling code here:
         String accountName = (String) jComboBox1.getSelectedItem();
 
         if (accountName != null && !accountName.equals("--select--")) {
             try {
                 DatabaseManager.connect();
 
-                String query = "DELETE FROM account WHERE account_type = ? AND user_id = ?";
-                PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-                pstmt.setString(1, accountName);
-                pstmt.setInt(2, UserSession.userId); // Assuming userId is accessible from UserSession
+                String query = "DELETE FROM accounts WHERE account_type = ? AND user_id = ?";
+                try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                    pstmt.setString(1, accountName);
+                    pstmt.setInt(2, UserSession.userId); // Assuming userId is accessible from UserSession
 
-                int rowsDeleted = pstmt.executeUpdate();
-                if (rowsDeleted > 0) {
-                    JOptionPane.showMessageDialog(null, "Account deleted successfully!");
-                    jComboBox1.removeItem(accountName);
-                    // populateTable();
-                    updateComponents(); // updates all components after deleting account successfully
-                } else {
-                    JOptionPane.showMessageDialog(null, "Failed to delete account.");
+                    int rowsDeleted = pstmt.executeUpdate();
+                    if (rowsDeleted > 0) {
+                        JOptionPane.showMessageDialog(null, "Account deleted successfully!");
+                        jComboBox1.removeItem(accountName);
+                        // populateTable();
+                        updateComponents(); // updates all components after deleting account successfully
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to delete account.");
+                    }
                 }
-
-                pstmt.close();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, ex);
             }
@@ -1407,7 +1359,6 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_deleteAccountActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jTextField1ActionPerformed
 
     private void expenseCategoryComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1415,45 +1366,44 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     private void createAccountActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_createAccountActionPerformed
-        // TODO add your handling code here:
         String accountName = jTextField1.getText().trim(); // Trim the input to remove leading/trailing spaces
 
         if (!accountName.isEmpty()) {
             try {
                 DatabaseManager.connect();
 
-                String checkQuery = "SELECT * FROM account WHERE account_type = ? and user_id = ?";
-                PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkQuery);
-                checkStmt.setString(1, accountName);
-                checkStmt.setInt(2, UserSession.userId);
+                String checkQuery = "SELECT * FROM accounts WHERE account_type = ? and user_id = ?";
+                try (PreparedStatement checkStmt = DatabaseManager.getConnection().prepareStatement(checkQuery)) {
+                    checkStmt.setString(1, accountName);
+                    checkStmt.setInt(2, UserSession.userId);
 
-                ResultSet resultSet = checkStmt.executeQuery();
-                if (resultSet.next()) {
-                    JOptionPane.showMessageDialog(null, "An account with the same name already exists.");
-                } else {
-                    String insertQuery = "INSERT INTO account(account_type, balance, user_id, liabilities) VALUES (?, ?, ?, ?)";
-                    PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(insertQuery);
-                    pstmt.setString(1, accountName);
-                    pstmt.setDouble(2, 0); // Initial balance set to 0
-                    pstmt.setDouble(4, 0); // Initial liability set to 0
-                    pstmt.setInt(3, UserSession.userId); // Assuming userId is accessible from UserSession
+                    try (ResultSet resultSet = checkStmt.executeQuery()) {
+                        if (resultSet.next()) {
+                            JOptionPane.showMessageDialog(null, "An account with the same name already exists.");
+                        } else {
+                            String insertQuery;
+                            insertQuery = "INSERT INTO accounts(account_type, balance, user_id, liabilities) VALUES (?, ?, ?, ?)";
+                            try (PreparedStatement pstmt = DatabaseManager.getConnection()
+                                    .prepareStatement(insertQuery)) {
+                                pstmt.setString(1, accountName);
+                                pstmt.setDouble(2, 0); // Initial balance set to 0
+                                pstmt.setDouble(4, 0); // Initial liability set to 0
+                                pstmt.setInt(3, UserSession.userId); // Assuming userId is accessible from UserSession
 
-                    int rowsInserted = pstmt.executeUpdate();
-                    if (rowsInserted > 0) {
-                        JOptionPane.showMessageDialog(null, "Account created successfully!");
-                        jTextField1.setText(""); // Clear the jTextField1 after successful account creation
-                        addAccountComboBox();
-                        // populateTable();
-                        updateComponents(); // updated all components after creating account successfully
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Failed to create account.");
+                                int rowsInserted = pstmt.executeUpdate();
+                                if (rowsInserted > 0) {
+                                    JOptionPane.showMessageDialog(null, "Account created successfully!");
+                                    jTextField1.setText(""); // Clear the jTextField1 after successful account creation
+                                    addAccountComboBox();
+                                    // populateTable();
+                                    updateComponents(); // updated all components after creating account successfully
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Failed to create account.");
+                                }
+                            }
+                        }
                     }
-
-                    pstmt.close();
                 }
-
-                resultSet.close();
-                checkStmt.close();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Error occurred while creating account: " + ex.getMessage());
             }
@@ -1464,19 +1414,15 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_createAccountActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBox1ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBox2ActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_jComboBox2ActionPerformed
 
     private void incomeSourceComboBoxActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_incomeSourceComboBoxActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_incomeSourceComboBoxActionPerformed
 
     private void incomeAccountNameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_incomeAccountNameActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_incomeAccountNameActionPerformed
 
     private void ExpenseAddButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1501,67 +1447,69 @@ public class HomePage extends javax.swing.JFrame {
 
                     DatabaseManager.connect();
 
-                    String accountQuery = "SELECT account_id, balance, liabilities FROM account WHERE account_type = ? and user_id = ?";
-                    PreparedStatement accountStmt = DatabaseManager.getConnection().prepareStatement(accountQuery);
-                    accountStmt.setString(1, expenseAccountName.getSelectedItem().toString());
-                    accountStmt.setInt(2, UserSession.userId);
-                    ResultSet accountResult = accountStmt.executeQuery();
+                    String accountQuery = "SELECT account_id, balance, liabilities FROM accounts WHERE account_type = ? and user_id = ?";
+                    try (PreparedStatement accountStmt = DatabaseManager.getConnection()
+                            .prepareStatement(accountQuery)) {
+                        accountStmt.setString(1, expenseAccountName.getSelectedItem().toString());
+                        accountStmt.setInt(2, UserSession.userId);
+                        ResultSet accountResult = accountStmt.executeQuery();
 
-                    if (accountResult.next()) {
-                        accountId = accountResult.getInt("account_id");
-                        double currentBalance = accountResult.getDouble("balance");
-                        double currentTotalExp = accountResult.getDouble("liabilities");
+                        if (accountResult.next()) {
+                            accountId = accountResult.getInt("id");
+                            double currentBalance = accountResult.getDouble("balance");
+                            double currentTotalExp = accountResult.getDouble("liabilities");
 
-                        if (currentBalance < amount) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Insufficient funds. Please choose a different account.");
-                            return; // Stop further processing
-                        }
-
-                        double newExp = currentTotalExp + amount;
-                        double newBalance = currentBalance - amount;
-                        String updateQuery = "UPDATE account SET balance = ?, liabilities = ? WHERE account_id = ?";
-                        PreparedStatement updateStmt = DatabaseManager.getConnection().prepareStatement(updateQuery);
-                        updateStmt.setDouble(1, newBalance);
-                        updateStmt.setDouble(2, newExp);
-                        updateStmt.setInt(3, accountId);
-                        int rowsUpdated = updateStmt.executeUpdate();
-
-                        if (rowsUpdated > 0) {
-                            String insertQuery = "INSERT INTO expense(user_id, account_id, expense_date, expense_category, remark, amount) VALUES (?, ?, ?, ?, ?, ?)";
-                            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(insertQuery);
-                            pstmt.setInt(1, UserSession.userId);
-                            pstmt.setInt(2, accountId);
-                            pstmt.setDate(3, expensedate);
-                            pstmt.setString(4, expenseCategory);
-                            pstmt.setString(5, expenseRemarkText);
-                            pstmt.setDouble(6, amount);
-
-                            int rowsInserted = pstmt.executeUpdate();
-                            if (rowsInserted > 0) {
-                                JOptionPane.showMessageDialog(null, "Expense recorded successfully!");
-                                expenseDate.setDate(null);
-                                expenseCategoryComboBox.setSelectedIndex(0);
-                                expenseAmount.setText("");
-                                expenseRemark.setText("");
-                                expenseAccountName.setSelectedIndex(0);
-                                // populate_expense_table();
-                                // populateTable();
-                                updateComponents(); // updates all components after recording expense successfully
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Failed to record expense.");
+                            if (currentBalance < amount) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Insufficient funds. Please choose a different account.");
+                                return; // Stop further processing
                             }
 
-                            pstmt.close();
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Failed to update account liabilities.");
-                        }
-                        updateStmt.close();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Account not found.");
-                    }
+                            double newExp = currentTotalExp + amount;
+                            double newBalance = currentBalance - amount;
+                            String updateQuery = "UPDATE accounts SET balance = ?, liabilities = ? WHERE account_id = ?";
+                            try (PreparedStatement updateStmt = DatabaseManager.getConnection()
+                                    .prepareStatement(updateQuery)) {
+                                updateStmt.setDouble(1, newBalance);
+                                updateStmt.setDouble(2, newExp);
+                                updateStmt.setInt(3, accountId);
+                                int rowsUpdated = updateStmt.executeUpdate();
 
-                    accountStmt.close();
+                                if (rowsUpdated > 0) {
+                                    String insertQuery = "INSERT INTO expenses(user_id, account_id, expense_date, expense_category, remark, amount) VALUES (?, ?, ?, ?, ?, ?)";
+                                    try (PreparedStatement pstmt = DatabaseManager.getConnection()
+                                            .prepareStatement(insertQuery)) {
+                                        pstmt.setInt(1, UserSession.userId);
+                                        pstmt.setInt(2, accountId);
+                                        pstmt.setDate(3, expensedate);
+                                        pstmt.setString(4, expenseCategory);
+                                        pstmt.setString(5, expenseRemarkText);
+                                        pstmt.setDouble(6, amount);
+
+                                        int rowsInserted = pstmt.executeUpdate();
+                                        if (rowsInserted > 0) {
+                                            JOptionPane.showMessageDialog(null, "Expense recorded successfully!");
+                                            expenseDate.setDate(null);
+                                            expenseCategoryComboBox.setSelectedIndex(0);
+                                            expenseAmount.setText("");
+                                            expenseRemark.setText("");
+                                            expenseAccountName.setSelectedIndex(0);
+                                            // populate_expense_table();
+                                            // populateTable();
+                                            updateComponents(); // updates all components after recording expense
+                                                                // successfully
+                                        } else {
+                                            JOptionPane.showMessageDialog(null, "Failed to record expense.");
+                                        }
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Failed to update account liabilities.");
+                                }
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Account not found.");
+                        }
+                    }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Please enter a valid expense amount (numbers only).");
                 } catch (SQLException ex) {
@@ -1576,8 +1524,7 @@ public class HomePage extends javax.swing.JFrame {
     }
 
     private void addIncomeButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addIncomeButtonActionPerformed
-        // TODO add your handling code here:
-        // TODO add your handling code here:
+
         String incomeSource = incomeSourceComboBox.getSelectedItem().toString();
         String incomeAmountText = incomeAmount.getText();
         if (incomeDate.getDate() == null) {
@@ -1603,60 +1550,63 @@ public class HomePage extends javax.swing.JFrame {
                     DatabaseManager.connect();
 
                     // Retrieve the accountId based on the account name
-                    String accountQuery = "SELECT account_id, balance FROM account WHERE account_type = ? and user_id = ?";
-                    PreparedStatement accountStmt = DatabaseManager.getConnection().prepareStatement(accountQuery);
-                    accountStmt.setString(1, incomeAccountName.getSelectedItem().toString());
-                    accountStmt.setInt(2, UserSession.userId);
-                    ResultSet accountResult = accountStmt.executeQuery();
+                    var accountQuery = "SELECT id, balance FROM accounts WHERE account_type = ? and user_id = ?";
+                    try (PreparedStatement accountStmt = DatabaseManager.getConnection()
+                            .prepareStatement(accountQuery)) {
+                        accountStmt.setString(1, incomeAccountName.getSelectedItem().toString());
+                        accountStmt.setInt(2, UserSession.userId);
+                        ResultSet accountResult = accountStmt.executeQuery();
 
-                    // Check if the account exists
-                    if (accountResult.next()) {
-                        accountId = accountResult.getInt("account_id");
-                        double currentBalance = accountResult.getDouble("balance");
+                        // Check if the account exists
+                        if (accountResult.next()) {
+                            accountId = accountResult.getInt("id");
+                            double currentBalance = accountResult.getDouble("balance");
 
-                        // Update balance with the income amount
-                        double newBalance = currentBalance + amount;
-                        String updateQuery = "UPDATE account SET balance = ? WHERE account_id = ?";
-                        PreparedStatement updateStmt = DatabaseManager.getConnection().prepareStatement(updateQuery);
-                        updateStmt.setDouble(1, newBalance);
-                        updateStmt.setInt(2, accountId);
-                        int rowsUpdated = updateStmt.executeUpdate();
+                            // Update balance with the income amount
+                            double newBalance = currentBalance + amount;
+                            String updateQuery = "UPDATE accounts SET balance = ? WHERE id = ?";
+                            try (PreparedStatement updateStmt = DatabaseManager.getConnection()
+                                    .prepareStatement(updateQuery)) {
+                                updateStmt.setDouble(1, newBalance);
+                                updateStmt.setInt(2, accountId);
+                                int rowsUpdated = updateStmt.executeUpdate();
 
-                        if (rowsUpdated > 0) {
-                            // Proceed with inserting income record into the income table
-                            // Insert income record into the database
-                            String insertQuery = "INSERT INTO income(user_id, account_id, income_date, income_source, amount) VALUES (?, ?, ?, ?, ?)";
-                            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(insertQuery);
-                            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
-                            pstmt.setInt(2, accountId);
-                            pstmt.setDate(3, incomedate); // Assuming current date is used
-                            pstmt.setString(4, incomeSource);
-                            pstmt.setDouble(5, amount);
+                                if (rowsUpdated > 0) {
+                                    // Proceed with inserting income record into the income table
+                                    // Insert income record into the database
+                                    String insertQuery = "INSERT INTO incomes(user_id, account_id, income_date, income_source, amount) VALUES (?, ?, ?, ?, ?)";
+                                    try (PreparedStatement pstmt = DatabaseManager.getConnection()
+                                            .prepareStatement(insertQuery)) {
+                                        pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from
+                                                                             // UserSession
+                                        pstmt.setInt(2, accountId);
+                                        pstmt.setDate(3, incomedate); // Assuming current date is used
+                                        pstmt.setString(4, incomeSource);
+                                        pstmt.setDouble(5, amount);
 
-                            int rowsInserted = pstmt.executeUpdate();
-                            if (rowsInserted > 0) {
-                                JOptionPane.showMessageDialog(null, "Income recorded successfully!");
-                                incomeDate.setDate(null);
-                                incomeSourceComboBox.setSelectedIndex(0);
-                                incomeAmount.setText("");
-                                incomeAccountName.setSelectedIndex(0);
-                                // populate_income_table();
-                                // populateTable();
-                                updateComponents(); // updates all components after recording income successfully
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Failed to record income.");
+                                        int rowsInserted = pstmt.executeUpdate();
+                                        if (rowsInserted > 0) {
+                                            JOptionPane.showMessageDialog(null, "Income recorded successfully!");
+                                            incomeDate.setDate(null);
+                                            incomeSourceComboBox.setSelectedIndex(0);
+                                            incomeAmount.setText("");
+                                            incomeAccountName.setSelectedIndex(0);
+                                            // populate_income_table();
+                                            // populateTable();
+                                            updateComponents(); // updates all components after recording income
+                                                                // successfully
+                                        } else {
+                                            JOptionPane.showMessageDialog(null, "Failed to record income.");
+                                        }
+                                    } // Assuming userId is accessible from UserSession
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Failed to update account balance.");
+                                }
                             }
-
-                            pstmt.close();
                         } else {
-                            JOptionPane.showMessageDialog(null, "Failed to update account balance.");
+                            JOptionPane.showMessageDialog(null, "Account not found.");
                         }
-                        updateStmt.close();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Account not found.");
                     }
-
-                    accountStmt.close();
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Please enter a valid income amount (numbers only).");
                 } catch (SQLException ex) {
@@ -1683,29 +1633,29 @@ public class HomePage extends javax.swing.JFrame {
         try {
             DatabaseManager.connect();
 
-            String query = "SELECT account_type FROM account WHERE user_id = ?";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            String query = "SELECT account_type FROM accounts WHERE user_id = ?";
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
 
-            ResultSet rs = pstmt.executeQuery();
+                ResultSet rs = pstmt.executeQuery();
 
-            jComboBox1.removeAllItems();
-            expenseAccountName.removeAllItems();
-            incomeAccountName.removeAllItems();
+                jComboBox1.removeAllItems();
+                expenseAccountName.removeAllItems();
+                incomeAccountName.removeAllItems();
 
-            jComboBox1.addItem("--select--");
-            expenseAccountName.addItem("--select--");
-            incomeAccountName.addItem("--select--");
+                jComboBox1.addItem("--select--");
+                expenseAccountName.addItem("--select--");
+                incomeAccountName.addItem("--select--");
 
-            while (rs.next()) {
-                String accountName = rs.getString("account_type");
-                jComboBox1.addItem(accountName);
-                expenseAccountName.addItem(accountName);
-                incomeAccountName.addItem(accountName);
-            }
+                while (rs.next()) {
+                    String accountName = rs.getString("account_type");
+                    jComboBox1.addItem(accountName);
+                    expenseAccountName.addItem(accountName);
+                    incomeAccountName.addItem(accountName);
+                }
 
-            rs.close();
-            pstmt.close();
+                rs.close();
+            } // Assuming userId is accessible from UserSession
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -1720,25 +1670,22 @@ public class HomePage extends javax.swing.JFrame {
             DatabaseManager.connect();
 
             // Prepare the SQL statement to retrieve income sources for the current user
-            String selectQuery = "SELECT source_name FROM income_source WHERE user_id = ?";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(selectQuery);
-
+            String selectQuery = "SELECT source_name FROM income_sources WHERE user_id = ?";
             // Set the user_id parameter
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
-
-            // Execute the query to retrieve income sources
-            ResultSet resultSet = pstmt.executeQuery();
-            incomeSourceComboBox.removeAllItems();
-            incomeSourceComboBox.addItem("--select--");
-
-            // Add income sources to the combo box
-            while (resultSet.next()) {
-                String sourceName = resultSet.getString("source_name");
-                incomeSourceComboBox.addItem(sourceName);
-            }
-
-            // Close the prepared statement
-            pstmt.close();
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(selectQuery)) {
+                // Set the user_id parameter
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Execute the query to retrieve income sources
+                ResultSet resultSet = pstmt.executeQuery();
+                incomeSourceComboBox.removeAllItems();
+                incomeSourceComboBox.addItem("--select--");
+                // Add income sources to the combo box
+                while (resultSet.next()) {
+                    String sourceName = resultSet.getString("source_name");
+                    incomeSourceComboBox.addItem(sourceName);
+                }
+                // Close the prepared statement
+            } // Assuming userId is accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error occurred while fetching income sources: " + ex.getMessage());
         }
@@ -1751,7 +1698,8 @@ public class HomePage extends javax.swing.JFrame {
         try {
             DatabaseManager.connect();
 
-            String query = "SELECT account_type, balance, liabilities FROM account WHERE user_id = ?";
+            String query;
+            query = "SELECT account_type, balance, liabilities FROM accounts WHERE user_id = ?";
             PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
             pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
 
@@ -1784,28 +1732,25 @@ public class HomePage extends javax.swing.JFrame {
             DatabaseManager.connect();
 
             // Prepare the SQL statement to retrieve income sources for the current user
-            String selectQuery = "SELECT category_name FROM expense_category WHERE user_id = ?";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(selectQuery);
-
+            String selectQuery = "SELECT category_name FROM expense_categories WHERE user_id = ?";
             // Set the user_id parameter
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
-
-            // Execute the query to retrieve income sources
-            ResultSet resultSet = pstmt.executeQuery();
-            expenseCategoryComboBox.removeAllItems();
-            expenseCategoryComboBox.addItem("--select--");
-            BudgetExpenseCategoryComboBox.removeAllItems();
-            BudgetExpenseCategoryComboBox.addItem("--select--");
-
-            // Add income sources to the combo box
-            while (resultSet.next()) {
-                String categoryName = resultSet.getString("category_name");
-                expenseCategoryComboBox.addItem(categoryName);
-                BudgetExpenseCategoryComboBox.addItem(categoryName);
-            }
-
-            // Close the prepared statement
-            pstmt.close();
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(selectQuery)) {
+                // Set the user_id parameter
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Execute the query to retrieve income sources
+                ResultSet resultSet = pstmt.executeQuery();
+                expenseCategoryComboBox.removeAllItems();
+                expenseCategoryComboBox.addItem("--select--");
+                BudgetExpenseCategoryComboBox.removeAllItems();
+                BudgetExpenseCategoryComboBox.addItem("--select--");
+                // Add income sources to the combo box
+                while (resultSet.next()) {
+                    String categoryName = resultSet.getString("category_name");
+                    expenseCategoryComboBox.addItem(categoryName);
+                    BudgetExpenseCategoryComboBox.addItem(categoryName);
+                }
+                // Close the prepared statement
+            } // Assuming userId is accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error occurred while fetching expense categories: " + ex.getMessage());
         }
@@ -1819,27 +1764,26 @@ public class HomePage extends javax.swing.JFrame {
             DatabaseManager.connect();
 
             String query = "SELECT i.income_date, i.income_source, i.amount, a.account_type " +
-                    "FROM income i " +
-                    "INNER JOIN account a ON i.account_id = a.account_id " +
+                    "FROM incomes i " +
+                    "INNER JOIN accounts a ON i.account_id = a.account_id " +
                     "WHERE i.user_id = ? order by i.income_date desc";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Iterate over the ResultSet and add data to the table model
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    // Iterate over the ResultSet and add data to the table model
+                    while (rs.next()) {
+                        Date incomeDate = rs.getDate("income_date");
+                        String incomeSource = rs.getString("income_source");
+                        double amount = rs.getDouble("amount");
+                        String accountName = rs.getString("account_type");
 
-            ResultSet rs = pstmt.executeQuery();
-
-            // Iterate over the ResultSet and add data to the table model
-            while (rs.next()) {
-                Date incomeDate = rs.getDate("income_date");
-                String incomeSource = rs.getString("income_source");
-                double amount = rs.getDouble("amount");
-                String accountName = rs.getString("account_type");
-
-                // Add a row to the table model
-                model.addRow(new Object[] { accountName, incomeDate, incomeSource, amount });
-            }
-
-            rs.close();
-            pstmt.close();
+                        // Add a row to the table model
+                        model.addRow(new Object[] { accountName, incomeDate, incomeSource, amount });
+                    }
+                }
+            } // Assuming userId is accessible from UserSession // Assuming userId is
+              // accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,
                     "An error occurred while populating the income table: " + ex.getMessage());
@@ -1852,28 +1796,28 @@ public class HomePage extends javax.swing.JFrame {
 
         try {
             String query = "SELECT e.expense_date, e.expense_category, e.amount, e.remark, a.account_type " +
-                    "FROM expense e " +
-                    "INNER JOIN account a ON e.account_id = a.account_id " +
+                    "FROM expenses e " +
+                    "INNER JOIN accounts a ON e.account_id = a.account_id " +
                     "WHERE e.user_id = ? order by e.expense_date desc";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Iterate over the ResultSet and add data to the table model
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    // Iterate over the ResultSet and add data to the table model
+                    while (rs.next()) {
+                        Date expense_Date = rs.getDate("expense_date");
+                        String expenseCategory = rs.getString("expense_category");
+                        double amount = rs.getDouble("amount");
+                        String accountName = rs.getString("account_type");
+                        String expenseRemarks = rs.getString("remark");
 
-            ResultSet rs = pstmt.executeQuery();
-
-            // Iterate over the ResultSet and add data to the table model
-            while (rs.next()) {
-                Date expense_Date = rs.getDate("expense_date");
-                String expenseCategory = rs.getString("expense_category");
-                double amount = rs.getDouble("amount");
-                String accountName = rs.getString("account_type");
-                String expenseRemarks = rs.getString("remark");
-
-                // Add a row to the table model
-                model.addRow(new Object[] { accountName, expenseCategory, amount, expense_Date, expenseRemarks });
-            }
-
-            rs.close();
-            pstmt.close();
+                        // Add a row to the table model
+                        model.addRow(
+                                new Object[] { accountName, expenseCategory, amount, expense_Date, expenseRemarks });
+                    }
+                }
+            } // Assuming userId is accessible from UserSession // Assuming userId is
+              // accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,
                     "An error occurred while populating the income table: " + ex.getMessage());
@@ -1883,43 +1827,43 @@ public class HomePage extends javax.swing.JFrame {
     private void populate_home_page() {
         try {
             // Prepare the SQL statements to retrieve data for the current user
-            String balanceQuery = "SELECT COALESCE(SUM(balance), 0) AS total_balance FROM account WHERE user_id = ?";
-            String liabilitiesQuery = "SELECT COALESCE(SUM(liabilities), 0) AS total_liabilities FROM account WHERE user_id = ?";
-            String incomeQuery = "SELECT COALESCE(SUM(amount), 0) AS total_income FROM income WHERE user_id = ? AND MONTH(income_date) = MONTH(NOW()) AND YEAR(income_date) = YEAR(NOW())";
-            String expenseQuery = "SELECT COALESCE(SUM(amount), 0) AS total_expense FROM expense WHERE user_id = ? AND MONTH(expense_date) = MONTH(NOW()) AND YEAR(expense_date) = YEAR(NOW())";
+            String balanceQuery = "SELECT COALESCE(SUM(balance), 0) AS total_balance FROM accounts WHERE user_id = ?";
+            String liabilitiesQuery = "SELECT COALESCE(SUM(liabilities), 0) AS total_liabilities FROM accounts WHERE user_id = ?";
+            String incomeQuery = "SELECT COALESCE(SUM(amount), 0) AS total_income FROM incomes WHERE user_id = ? AND MONTH(income_date) = MONTH(NOW()) AND YEAR(income_date) = YEAR(NOW())";
+            String expenseQuery = "SELECT COALESCE(SUM(amount), 0) AS total_expense FROM expenses WHERE user_id = ? AND MONTH(expense_date) = MONTH(NOW()) AND YEAR(expense_date) = YEAR(NOW())";
 
-            // Execute the queries for balance, liabilities, income, and expense
-            PreparedStatement balanceStmt = DatabaseManager.getConnection().prepareStatement(balanceQuery);
-            balanceStmt.setInt(1, UserSession.userId);
-            ResultSet balanceRs = balanceStmt.executeQuery();
-
-            PreparedStatement liabilitiesStmt = DatabaseManager.getConnection().prepareStatement(liabilitiesQuery);
-            liabilitiesStmt.setInt(1, UserSession.userId);
-            ResultSet liabilitiesRs = liabilitiesStmt.executeQuery();
-
-            PreparedStatement incomeStmt = DatabaseManager.getConnection().prepareStatement(incomeQuery);
-            incomeStmt.setInt(1, UserSession.userId);
-            ResultSet incomeRs = incomeStmt.executeQuery();
-
-            PreparedStatement expenseStmt = DatabaseManager.getConnection().prepareStatement(expenseQuery);
-            expenseStmt.setInt(1, UserSession.userId);
-            ResultSet expenseRs = expenseStmt.executeQuery();
-
-            // Get the values from the result sets
-            double totalBalance = balanceRs.next() ? balanceRs.getDouble("total_balance") : 0;
-            double totalLiabilities = liabilitiesRs.next() ? liabilitiesRs.getDouble("total_liabilities") : 0;
-            double totalIncome = incomeRs.next() ? incomeRs.getDouble("total_income") : 0;
-            double totalExpense = expenseRs.next() ? expenseRs.getDouble("total_expense") : 0;
-
-            // Populate the home page UI components
-            balanceLabel.setText(String.valueOf(totalBalance));
-            liabilitiesLabel.setText(String.valueOf(totalLiabilities));
-            incomeLabel.setText(String.valueOf(totalIncome));
-            expenseLabel.setText(String.valueOf(totalExpense));
-
-            // Close result sets and statements
-            balanceRs.close();
-            balanceStmt.close();
+            PreparedStatement liabilitiesStmt;
+            ResultSet liabilitiesRs;
+            PreparedStatement incomeStmt;
+            ResultSet incomeRs;
+            PreparedStatement expenseStmt;
+            ResultSet expenseRs;
+            try ( // Execute the queries for balance, liabilities, income, and expense
+                    PreparedStatement balanceStmt = DatabaseManager.getConnection().prepareStatement(balanceQuery)) {
+                balanceStmt.setInt(1, UserSession.userId);
+                try (ResultSet balanceRs = balanceStmt.executeQuery()) {
+                    liabilitiesStmt = DatabaseManager.getConnection().prepareStatement(liabilitiesQuery);
+                    liabilitiesStmt.setInt(1, UserSession.userId);
+                    liabilitiesRs = liabilitiesStmt.executeQuery();
+                    incomeStmt = DatabaseManager.getConnection().prepareStatement(incomeQuery);
+                    incomeStmt.setInt(1, UserSession.userId);
+                    incomeRs = incomeStmt.executeQuery();
+                    expenseStmt = DatabaseManager.getConnection().prepareStatement(expenseQuery);
+                    expenseStmt.setInt(1, UserSession.userId);
+                    expenseRs = expenseStmt.executeQuery();
+                    // Get the values from the result sets
+                    double totalBalance = balanceRs.next() ? balanceRs.getDouble("total_balance") : 0;
+                    double totalLiabilities = liabilitiesRs.next() ? liabilitiesRs.getDouble("total_liabilities") : 0;
+                    double totalIncome = incomeRs.next() ? incomeRs.getDouble("total_income") : 0;
+                    double totalExpense = expenseRs.next() ? expenseRs.getDouble("total_expense") : 0;
+                    // Populate the home page UI components
+                    balanceLabel.setText(String.valueOf(totalBalance));
+                    liabilitiesLabel.setText(String.valueOf(totalLiabilities));
+                    incomeLabel.setText(String.valueOf(totalIncome));
+                    expenseLabel.setText(String.valueOf(totalExpense));
+                    // Close result sets and statements
+                }
+            }
             liabilitiesRs.close();
             liabilitiesStmt.close();
             incomeRs.close();
@@ -1927,8 +1871,7 @@ public class HomePage extends javax.swing.JFrame {
             expenseRs.close();
             expenseStmt.close();
         } catch (SQLException ex) {
-            // Handle any SQL errors
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "SQL error occurred :", ex);
         }
     }
 
@@ -1938,29 +1881,28 @@ public class HomePage extends javax.swing.JFrame {
 
         try {
             String query = "SELECT t.transaction_id, t.type, t.amount, t.statement, t.time, a.account_type " +
-                    "FROM transaction t " +
-                    "INNER JOIN account a ON t.account_id = a.account_id " +
+                    "FROM transactions t " +
+                    "INNER JOIN accounts a ON t.account_id = a.id " +
                     "WHERE a.user_id = ? order by t.time desc";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Iterate over the ResultSet and add data to the table model
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    // Iterate over the ResultSet and add data to the table model
+                    while (rs.next()) {
+                        int transactionId = rs.getInt("transaction_id");
+                        String type = rs.getString("type");
+                        double amount = rs.getDouble("amount");
+                        String statement = rs.getString("statement");
+                        String time = rs.getString("time");
+                        String accountName = rs.getString("account_type");
 
-            ResultSet rs = pstmt.executeQuery();
-
-            // Iterate over the ResultSet and add data to the table model
-            while (rs.next()) {
-                int transactionId = rs.getInt("transaction_id");
-                String type = rs.getString("type");
-                double amount = rs.getDouble("amount");
-                String statement = rs.getString("statement");
-                String time = rs.getString("time");
-                String accountName = rs.getString("account_type");
-
-                // Add a row to the table model
-                model.addRow(new Object[] { transactionId, accountName, type, amount, statement, time });
-            }
-
-            rs.close();
-            pstmt.close();
+                        // Add a row to the table model
+                        model.addRow(new Object[] { transactionId, accountName, type, amount, statement, time });
+                    }
+                }
+            } // Assuming userId is accessible from UserSession // Assuming userId is
+              // accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,
                     "An error occurred while populating the transaction table: " + ex.getMessage());
@@ -1973,24 +1915,23 @@ public class HomePage extends javax.swing.JFrame {
 
             // Query to retrieve distinct expense categories from the budget table for the
             // current user
-            String query = "SELECT DISTINCT expense_category FROM budget WHERE user_id = ?";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            String query = "SELECT DISTINCT expense_categories FROM budget WHERE user_id = ?";
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Clear existing items in the removeBudgetComboBox
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    // Clear existing items in the removeBudgetComboBox
+                    removeBudgetComboBox.removeAllItems();
+                    removeBudgetComboBox.addItem("--select--");
 
-            ResultSet rs = pstmt.executeQuery();
-
-            // Clear existing items in the removeBudgetComboBox
-            removeBudgetComboBox.removeAllItems();
-            removeBudgetComboBox.addItem("--select--");
-
-            // Add expense categories to the removeBudgetComboBox
-            while (rs.next()) {
-                String expenseCategory = rs.getString("expense_category");
-                removeBudgetComboBox.addItem(expenseCategory);
-            }
-
-            rs.close();
-            pstmt.close();
+                    // Add expense categories to the removeBudgetComboBox
+                    while (rs.next()) {
+                        String expenseCategory = rs.getString("expense_category");
+                        removeBudgetComboBox.addItem(expenseCategory);
+                    }
+                }
+            } // Assuming userId is accessible from UserSession // Assuming userId is
+              // accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,
                     "Error occurred while filling removeBudgetComboBox: " + ex.getMessage());
@@ -2002,23 +1943,22 @@ public class HomePage extends javax.swing.JFrame {
         model.setRowCount(0); // Clear previous data from the table
 
         try {
-            String query = "SELECT expense_category, amount FROM budget WHERE user_id = ? order by expense_category";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+            String query = "SELECT expense_category, amount FROM budgets WHERE user_id = ? order by expense_category";
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setInt(1, UserSession.userId); // Assuming userId is accessible from UserSession
+                // Iterate over the ResultSet and add data to the table model
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    // Iterate over the ResultSet and add data to the table model
+                    while (rs.next()) {
+                        String expenseCategory = rs.getString("expense_category");
+                        double amount = rs.getDouble("amount");
 
-            ResultSet rs = pstmt.executeQuery();
-
-            // Iterate over the ResultSet and add data to the table model
-            while (rs.next()) {
-                String expenseCategory = rs.getString("expense_category");
-                double amount = rs.getDouble("amount");
-
-                // Add a row to the table model
-                model.addRow(new Object[] { expenseCategory, amount });
-            }
-
-            rs.close();
-            pstmt.close();
+                        // Add a row to the table model
+                        model.addRow(new Object[] { expenseCategory, amount });
+                    }
+                }
+            } // Assuming userId is accessible from UserSession // Assuming userId is
+              // accessible from UserSession
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,
                     "An error occurred while populating the budget table: " + ex.getMessage());
@@ -2029,69 +1969,60 @@ public class HomePage extends javax.swing.JFrame {
         try {
             // Get total income for this month
             String incomeQuery = "SELECT COALESCE(SUM(amount), 0) AS total_income " +
-                    "FROM income " +
+                    "FROM incomes " +
                     "WHERE user_id = ? " +
                     "AND MONTH(income_date) = MONTH(CURRENT_DATE()) " +
                     "AND YEAR(income_date) = YEAR(CURRENT_DATE())";
-            PreparedStatement incomeStmt = DatabaseManager.getConnection().prepareStatement(incomeQuery);
-            incomeStmt.setInt(1, UserSession.userId);
-            ResultSet incomeResult = incomeStmt.executeQuery();
-
-            double totalIncome = 0;
-            if (incomeResult.next()) {
-                totalIncome = incomeResult.getDouble("total_income");
+            PreparedStatement expenseStmt;
+            ResultSet expenseResult;
+            PreparedStatement targetAmountStmt;
+            ResultSet targetAmountResult;
+            try (PreparedStatement incomeStmt = DatabaseManager.getConnection().prepareStatement(incomeQuery)) {
+                incomeStmt.setInt(1, UserSession.userId);
+                try (ResultSet incomeResult = incomeStmt.executeQuery()) {
+                    double totalIncome = 0;
+                    if (incomeResult.next()) {
+                        totalIncome = incomeResult.getDouble("total_income");
+                    } // Get total expense for this month
+                    String expenseQuery = "SELECT COALESCE(SUM(amount), 0) AS total_expense " +
+                            "FROM expenses " +
+                            "WHERE user_id = ? " +
+                            "AND MONTH(expense_date) = MONTH(CURRENT_DATE()) " +
+                            "AND YEAR(expense_date) = YEAR(CURRENT_DATE())";
+                    expenseStmt = DatabaseManager.getConnection().prepareStatement(expenseQuery);
+                    expenseStmt.setInt(1, UserSession.userId);
+                    expenseResult = expenseStmt.executeQuery();
+                    double totalExpense = 0;
+                    if (expenseResult.next()) {
+                        totalExpense = expenseResult.getDouble("total_expense");
+                    } // Calculate saved money
+                    double savedMoney = totalIncome - totalExpense;
+                    // Get target amount for this month
+                    String targetAmountQuery = "SELECT amount FROM target_amounts " +
+                            "WHERE user_id = ?";
+                    targetAmountStmt = DatabaseManager.getConnection().prepareStatement(targetAmountQuery);
+                    targetAmountStmt.setInt(1, UserSession.userId);
+                    targetAmountResult = targetAmountStmt.executeQuery();
+                    double targetAmount = 0;
+                    if (targetAmountResult.next()) {
+                        targetAmount = targetAmountResult.getDouble("amount");
+                    } // Calculate percentage achieved towards the target amount
+                    double percentage = 0;
+                    if (targetAmount != 0) {
+                        percentage = (savedMoney / targetAmount) * 100;
+                    } // Update progress bar
+                    int progress = (int) Math.round(percentage);
+                    jProgressBar1.setValue(progress);
+                    progressLabel.setText(savedMoney + "/" + targetAmount);
+                    // Close result sets and statements
+                }
             }
-
-            // Get total expense for this month
-            String expenseQuery = "SELECT COALESCE(SUM(amount), 0) AS total_expense " +
-                    "FROM expense " +
-                    "WHERE user_id = ? " +
-                    "AND MONTH(expense_date) = MONTH(CURRENT_DATE()) " +
-                    "AND YEAR(expense_date) = YEAR(CURRENT_DATE())";
-            PreparedStatement expenseStmt = DatabaseManager.getConnection().prepareStatement(expenseQuery);
-            expenseStmt.setInt(1, UserSession.userId);
-            ResultSet expenseResult = expenseStmt.executeQuery();
-
-            double totalExpense = 0;
-            if (expenseResult.next()) {
-                totalExpense = expenseResult.getDouble("total_expense");
-            }
-
-            // Calculate saved money
-            double savedMoney = totalIncome - totalExpense;
-
-            // Get target amount for this month
-            String targetAmountQuery = "SELECT amount FROM target_amount " +
-                    "WHERE user_id = ?";
-            PreparedStatement targetAmountStmt = DatabaseManager.getConnection().prepareStatement(targetAmountQuery);
-            targetAmountStmt.setInt(1, UserSession.userId);
-            ResultSet targetAmountResult = targetAmountStmt.executeQuery();
-
-            double targetAmount = 0;
-            if (targetAmountResult.next()) {
-                targetAmount = targetAmountResult.getDouble("amount");
-            }
-
-            // Calculate percentage achieved towards the target amount
-            double percentage = 0;
-            if (targetAmount != 0) {
-                percentage = (savedMoney / targetAmount) * 100;
-            }
-
-            // Update progress bar
-            int progress = (int) Math.round(percentage);
-            jProgressBar1.setValue(progress);
-            progressLabel.setText(savedMoney + "/" + targetAmount);
-
-            // Close result sets and statements
-            incomeResult.close();
-            incomeStmt.close();
             expenseResult.close();
             expenseStmt.close();
             targetAmountResult.close();
             targetAmountStmt.close();
         } catch (SQLException ex) {
-            ex.printStackTrace(); // Handle SQL exception
+            logger.log(Level.SEVERE, "SQL error occurred :", ex);
         }
     }
 
@@ -2115,21 +2046,14 @@ public class HomePage extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(HomePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         // </editor-fold>
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new HomePage().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new HomePage().setVisible(true);
         });
     }
 
@@ -2256,5 +2180,5 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JButton resetIncomeButton;
     private javax.swing.JTextField targetAmountTextField;
     private javax.swing.JTable transactionTable;
-// End of variables declaration//GEN-END:variables
+    // End of variables declaration//GEN-END:variables
 }
