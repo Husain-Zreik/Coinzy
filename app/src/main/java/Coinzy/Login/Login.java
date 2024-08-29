@@ -1,23 +1,25 @@
-
 package Coinzy.Login;
 
-import javax.swing.JOptionPane;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 
 import Coinzy.Database.DatabaseManager;
-import Coinzy.Home.HomePage;
 import Coinzy.Database.UserSession;
+import Coinzy.Home.HomePage;
 
 public class Login extends javax.swing.JFrame {
+    private static final Logger logger = Logger.getLogger(SignUp.class.getName());
 
     public Login() {
         initComponents();
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated
     // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -45,8 +47,6 @@ public class Login extends javax.swing.JFrame {
         Right.setBackground(new java.awt.Color(0, 102, 102));
         Right.setPreferredSize(new java.awt.Dimension(400, 500));
 
-        // jLabel5.setIcon(new
-        // javax.swing.ImageIcon(getClass().getResource("../Icon/logo.png"))); // NOI18N
         java.net.URL logoURL = getClass().getResource("/Icon/logo.png");
         if (logoURL != null) {
             jLabel5.setIcon(new javax.swing.ImageIcon(logoURL));
@@ -54,9 +54,9 @@ public class Login extends javax.swing.JFrame {
             System.err.println("Icon resource not found: /Icon/logo.png");
         }
 
-        jLabel6.setFont(new java.awt.Font("Segoe Script", 1, 24)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe Script", 1, 24));
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Finance Mangement");
+        jLabel6.setText("Finance Management");
 
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);
@@ -87,45 +87,33 @@ public class Login extends javax.swing.JFrame {
         Left.setBackground(new java.awt.Color(255, 255, 255));
         Left.setMinimumSize(new java.awt.Dimension(400, 500));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36));
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
         jLabel1.setText("Login");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16));
         jLabel2.setText("Username");
 
-        username.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        username.setFont(new java.awt.Font("Segoe UI", 0, 16));
         username.setForeground(new java.awt.Color(102, 102, 102));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16));
         jLabel3.setText("Password");
 
-        password.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordActionPerformed(evt);
-            }
-        });
+        password.addActionListener(evt -> passwordActionPerformed(evt));
 
         jButton1.setBackground(new java.awt.Color(0, 102, 102));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14));
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Login");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        jButton1.addActionListener(evt -> jButton1ActionPerformed(evt));
 
-        jLabel4.setText("I don't have account");
+        jLabel4.setText("I don't have an account");
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14));
         jButton2.setForeground(new java.awt.Color(255, 51, 51));
         jButton2.setText("Sign Up");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
+        jButton2.addActionListener(evt -> jButton2ActionPerformed(evt));
 
         javax.swing.GroupLayout LeftLayout = new javax.swing.GroupLayout(Left);
         Left.setLayout(LeftLayout);
@@ -198,7 +186,6 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void passwordActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_passwordActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_passwordActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -211,7 +198,7 @@ public class Login extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         var user_id = username.getText();
-        var pass = String.valueOf(password.getPassword()); // Safely get the password
+        var pass = String.valueOf(password.getPassword());
 
         if (user_id == null || user_id.isEmpty() || pass == null || pass.isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, "Please fill in both username and password fields.");
@@ -219,86 +206,52 @@ public class Login extends javax.swing.JFrame {
         }
 
         if (attemptLogin(user_id, pass)) {
-            UserSession s = new UserSession();
-            s.userId = getUserId(user_id); // Assuming getUserId is a method that retrieves the user ID
-            HomePage homePageFrame = new HomePage();
-            homePageFrame.setVisible(true);
-            homePageFrame.pack();
-            homePageFrame.setLocationRelativeTo(null);
+            UserSession.userId = getUserId(user_id);
+            HomePage home = new HomePage();
+            home.setVisible(true);
+            home.pack();
+            home.setLocationRelativeTo(null);
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(rootPane, "Login Unsuccessful!!");
+            JOptionPane.showMessageDialog(rootPane, "Invalid username or password.");
         }
     }
 
-    private boolean attemptLogin(String username, String password) {
-        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
-        try (Connection con = DatabaseManager.getConnection();
-                PreparedStatement pstmt = con.prepareStatement(query)) {
-
-            pstmt.setString(1, username);
-            pstmt.setString(2, password); // Consider hashing the password before comparing
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    JOptionPane.showMessageDialog(null,
-                            "Welcome " + username + " to Finance Management \nYou have Successfully logged in");
-                    return true;
+    private boolean attemptLogin(String user_id, String pass) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "SELECT * FROM users WHERE username=? AND password=?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, user_id);
+                stmt.setString(2, pass);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    return rs.next();
                 }
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(rootPane, e.getMessage());
+            logger.log(Level.SEVERE, "SQL error occurred :", e);
+            return false;
         }
-        return false;
     }
 
     private int getUserId(String username) {
-        String query = "SELECT id FROM users WHERE username = ?";
-        try (Connection con = DatabaseManager.getConnection();
-                PreparedStatement pstmt = con.prepareStatement(query)) {
-
-            pstmt.setString(1, username);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("id");
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "SELECT id FROM users WHERE username=?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("id");
+                    }
                 }
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(rootPane, e.getMessage());
+            logger.log(Level.SEVERE, "SQL error occurred :", e);
         }
         return -1;
     }
 
     public static void main(String args[]) {
-        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
-        // (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
-         * look and feel.
-         * For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        // </editor-fold>
-
         java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -316,7 +269,4 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
-
-    private Connection con;
-    private ResultSet rs;
 }

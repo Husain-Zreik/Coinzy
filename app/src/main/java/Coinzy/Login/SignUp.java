@@ -1,43 +1,36 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Coinzy.Login;
 
-import javax.swing.*;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.ResultSet;
 import Coinzy.Database.DatabaseManager;
+import java.awt.HeadlessException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.*;
 
 class PasswordException extends Exception {
-
     public PasswordException(String message) {
         super(message);
     }
 }
 
 public class SignUp extends javax.swing.JFrame {
+    private static final Logger logger = Logger.getLogger(SignUp.class.getName());
 
     public SignUp() {
         initComponents();
     }
 
     private void passwordRestrictions(String password) throws PasswordException {
-        // Define password restrictions
         int minLength = 8;
-        String specialCharacters = "!@#$%^&*()_+";
 
-        // Check minimum length
         if (password.length() < minLength) {
             throw new PasswordException("Password should be at least " + minLength + " characters long.");
         }
 
-        // Check for special characters
         Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
         Matcher matcher = pattern.matcher(password);
         if (!matcher.find()) {
@@ -45,7 +38,6 @@ public class SignUp extends javax.swing.JFrame {
         }
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated
     // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -267,7 +259,6 @@ public class SignUp extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void passwordActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_passwordActionPerformed
-        // TODO add your handling code here:
     }// GEN-LAST:event_passwordActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
@@ -275,72 +266,66 @@ public class SignUp extends javax.swing.JFrame {
         try {
             DatabaseManager.connect();
 
-            // Assuming name, username, and password are JTextField or similar components
             String name1 = name.getText();
             String username1 = username.getText();
-            String password1 = password.getText();
+            String password1 = new String(password.getPassword());
 
-            // Check if any of the fields are empty
             if (name1.isEmpty() || username1.isEmpty() || password1.isEmpty()) {
-                String errorMessage = "Please fill in the following field(s):";
+                StringBuilder errorMessage = new StringBuilder("Please fill in the following field(s):");
                 if (name1.isEmpty()) {
-                    errorMessage += "\n- Name";
+                    errorMessage.append("\n- Name");
                 }
                 if (username1.isEmpty()) {
-                    errorMessage += "\n- Username";
+                    errorMessage.append("\n- Username");
                 }
                 if (password1.isEmpty()) {
-                    errorMessage += "\n- Password";
+                    errorMessage.append("\n- Password");
                 }
-                JOptionPane.showMessageDialog(null, errorMessage);
+                JOptionPane.showMessageDialog(this, errorMessage.toString());
                 return;
             }
 
-            // Check password restrictions
             passwordRestrictions(password1);
 
-            // Check if the username already exists in the database
             String query = "SELECT * FROM users WHERE username = ?";
-            PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setString(1, username1);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                JOptionPane.showMessageDialog(null, "Username already exists. Please choose another one.");
-                return;
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setString(1, username1);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        JOptionPane.showMessageDialog(this, "Username already exists. Please choose another one.");
+                        return;
+                    }
+                }
             }
 
-            // If username doesn't exist and password meets restrictions, proceed with
-            // insertion
             query = "INSERT INTO users(name, username, password) VALUES (?, ?, ?)";
-            pstmt = DatabaseManager.getConnection().prepareStatement(query);
-            pstmt.setString(1, name1);
-            pstmt.setString(2, username1);
-            pstmt.setString(3, password1);
+            try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
+                pstmt.setString(1, name1);
+                pstmt.setString(2, username1);
+                pstmt.setString(3, password1);
 
-            int rowsInserted = pstmt.executeUpdate();
-            if (rowsInserted > 0) {
-                // Insertion successful
-                name.setText("");
-                username.setText("");
-                password.setText("");
-                JOptionPane.showMessageDialog(null, "Account successfully created!");
+                int rowsInserted = pstmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    name.setText("");
+                    username.setText("");
+                    password.setText("");
+                    JOptionPane.showMessageDialog(this, "Account successfully created!");
+                }
             }
+
         } catch (PasswordException ex) {
-            JOptionPane.showMessageDialog(null, "Password error: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Password error: " + ex.getMessage());
+            logger.log(Level.WARNING, "Password error occurred", ex);
         } catch (SQLException ex) {
-            // Handle SQL exceptions
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error occurred while creating account: " + ex.getMessage());
-        } catch (Exception ex) {
-            // Handle other exceptions
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "An unexpected error occurred: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error occurred while creating account: " + ex.getMessage());
+            logger.log(Level.SEVERE, "SQL error occurred", ex);
+        } catch (HeadlessException ex) {
+            logger.log(Level.SEVERE, "An unexpected error occurred: ", ex);
         }
 
     }// GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
         Login LoginFrame = new Login();
         LoginFrame.setVisible(true);
         LoginFrame.pack();
@@ -348,43 +333,8 @@ public class SignUp extends javax.swing.JFrame {
         this.dispose();
     }// GEN-LAST:event_jButton2ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
-        // (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
-         * look and feel.
-         * For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SignUp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SignUp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SignUp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SignUp.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        // </editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new SignUp().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new SignUp().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -404,6 +354,4 @@ public class SignUp extends javax.swing.JFrame {
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
-    private Connection con;
-    private ResultSet rs;
 }
