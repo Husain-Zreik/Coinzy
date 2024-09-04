@@ -7,19 +7,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:mysql://localhost:3306/coinzy_db";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/coinzy_db";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
     private static Connection connection;
 
     // Private constructor to prevent instantiation
-    private DatabaseManager() {}
+    private DatabaseManager() {
+    }
 
     public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
-                connect();  // Attempt to connect if connection is null or closed
+                connect(); // Attempt to connect if connection is null or closed
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,7 +45,7 @@ public class DatabaseManager {
         Statement statement = null;
         try {
             if (connection == null || connection.isClosed()) {
-                connect();  // Ensure connection is established before executing query
+                connect(); // Ensure connection is established before executing query
             }
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
