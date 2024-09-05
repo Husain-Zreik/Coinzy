@@ -240,7 +240,7 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Icon/refresh_17814.png"/>
+              <Image iconType="3" name="/assets/refresh_17814.png"/>
             </Property>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
@@ -341,7 +341,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel20">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/Icon/balance.png"/>
+                          <Image iconType="3" name="/assets/balance.png"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -396,7 +396,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel16">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/Icon/liabilites.png"/>
+                          <Image iconType="3" name="/assets/liabilites.png"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -451,7 +451,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel14">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/Icon/income.png"/>
+                          <Image iconType="3" name="/assets/income.png"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -506,7 +506,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel4">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/Icon/expense.png"/>
+                          <Image iconType="3" name="/assets/expense.png"/>
                         </Property>
                       </Properties>
                       <Constraints>

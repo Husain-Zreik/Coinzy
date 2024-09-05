@@ -1,14 +1,16 @@
-package Coinzy.Home;
+package Coinzy.views.user.home;
 
+import Coinzy.views.user.chart.IncomeExpenseChart;
 import javax.swing.table.DefaultTableModel;
-import Coinzy.Database.DatabaseManager;
-import Coinzy.Chart.IncomeExpenseChart;
-import Coinzy.Database.UserSession;
+import Coinzy.views.authentication.Login;
+import Coinzy.database.DatabaseManager;
+import Coinzy.models.UserSession;
+
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.sql.SQLException;
 import java.sql.ResultSet;
-import Coinzy.Login.Login;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
@@ -328,7 +330,7 @@ public class HomePage extends javax.swing.JFrame {
 
         refreshButton.setBackground(new java.awt.Color(0, 102, 102));
         refreshButton.setForeground(new java.awt.Color(255, 255, 255));
-        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/refresh_17814.png"))); // NOI18N
+        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/refresh_17814.png"))); // NOI18N
         refreshButton.setBorder(null);
         refreshButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -372,7 +374,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel7.add(jLabel9);
         jLabel9.setBounds(30, 60, 140, 40);
 
-        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/balance.png"))); // NOI18N
+        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/balance.png"))); // NOI18N
         jPanel7.add(jLabel20);
         jLabel20.setBounds(60, 10, 70, 60);
 
@@ -388,7 +390,7 @@ public class HomePage extends javax.swing.JFrame {
         jLabel10.setText("Liabilites");
         jPanel6.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, -1, -1));
 
-        jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/liabilites.png"))); // NOI18N
+        jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/liabilites.png"))); // NOI18N
         jPanel6.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, 70, 60));
 
         Home_tab.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 20, 190, 150));
@@ -405,7 +407,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel8.add(jLabel11);
         jLabel11.setBounds(30, 60, 140, 40);
 
-        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/income.png"))); // NOI18N
+        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/income.png"))); // NOI18N
         jPanel8.add(jLabel14);
         jLabel14.setBounds(60, 10, 80, 60);
 
@@ -423,7 +425,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel9.add(jLabel12);
         jLabel12.setBounds(20, 60, 160, 40);
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/expense.png"))); // NOI18N
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/expense.png"))); // NOI18N
         jPanel9.add(jLabel4);
         jLabel4.setBounds(60, 20, 70, 50);
 

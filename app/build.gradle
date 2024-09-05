@@ -19,6 +19,10 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation libs.junit.jupiter
 
+    implementation 'org.openjfx:javafx:22.0.2'
+
+    implementation 'ch.qos.logback:logback-classic:1.5.7'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation 'org.knowm.xchart:xchart:3.8.8'

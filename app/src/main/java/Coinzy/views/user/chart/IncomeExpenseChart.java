@@ -1,4 +1,4 @@
-package Coinzy.Chart;
+package Coinzy.views.user.chart;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,8 +13,8 @@ import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.SwingWrapper;
 
-import Coinzy.Database.DatabaseManager;
-import Coinzy.Database.UserSession;
+import Coinzy.database.DatabaseManager;
+import Coinzy.models.UserSession;
 
 public class IncomeExpenseChart {
 
