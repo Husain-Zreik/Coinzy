@@ -2,7 +2,7 @@ package Coinzy.views.user.home;
 
 import Coinzy.views.user.chart.IncomeExpenseChart;
 import javax.swing.table.DefaultTableModel;
-import Coinzy.views.authentication.Login;
+import Coinzy.views.authentication.LoginView;
 import Coinzy.database.DatabaseManager;
 import Coinzy.models.UserSession;
 
@@ -1229,7 +1229,7 @@ public class HomePage extends javax.swing.JFrame {
     }// GEN-LAST:event_incomeAmountActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
-        Login LoginFrame = new Login();
+        LoginView LoginFrame = new LoginView();
         LoginFrame.setVisible(true);
         LoginFrame.pack();
         LoginFrame.setLocationRelativeTo(null);

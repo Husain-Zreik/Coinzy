@@ -2,7 +2,7 @@ package Coinzy;
 
 import javax.swing.SwingUtilities;
 
-import Coinzy.views.authentication.Login;
+import Coinzy.views.authentication.LoginView;
 
 public class App {
 
@@ -11,7 +11,7 @@ public class App {
         // Dispatch Thread (EDT)
         SwingUtilities.invokeLater(() -> {
             // Create and show the Login frame
-            Login loginFrame = new Login();
+            LoginView loginFrame = new LoginView();
             loginFrame.setVisible(true);
             loginFrame.pack();
             loginFrame.setLocationRelativeTo(null); // Center the frame on the screen

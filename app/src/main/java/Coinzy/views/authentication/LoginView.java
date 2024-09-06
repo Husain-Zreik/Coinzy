@@ -1,23 +1,13 @@
 package Coinzy.views.authentication;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import Coinzy.controllers.authentication.LoginController;
 
-import javax.swing.JOptionPane;
+public class LoginView extends javax.swing.JFrame {
+        private final LoginController loginController;
 
-import Coinzy.database.DatabaseManager;
-import Coinzy.models.UserSession;
-import Coinzy.views.user.home.HomePage;
-
-public class Login extends javax.swing.JFrame {
-        private static final Logger logger = Logger.getLogger(Login.class.getName());
-
-        public Login() {
+        public LoginView() {
                 initComponents();
+                loginController = new LoginController();
         }
 
         // <editor-fold defaultstate="collapsed" desc="Generated
@@ -241,7 +231,7 @@ public class Login extends javax.swing.JFrame {
         }// GEN-LAST:event_passwordActionPerformed
 
         private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-                SignUp signUpFrame = new SignUp();
+                SignupView signUpFrame = new SignupView();
                 signUpFrame.setVisible(true);
                 signUpFrame.pack();
                 signUpFrame.setLocationRelativeTo(null);
@@ -252,58 +242,12 @@ public class Login extends javax.swing.JFrame {
                 var user_id = username.getText();
                 var pass = String.valueOf(password.getPassword());
 
-                if (user_id == null || user_id.isEmpty() || pass == null || pass.isEmpty()) {
-                        JOptionPane.showMessageDialog(rootPane, "Please fill in both username and password fields.");
-                        return;
-                }
-
-                if (attemptLogin(user_id, pass)) {
-                        UserSession.userId = getUserId(user_id);
-                        HomePage home = new HomePage();
-                        home.setVisible(true);
-                        home.pack();
-                        home.setLocationRelativeTo(null);
-                        this.dispose();
-                } else {
-                        JOptionPane.showMessageDialog(rootPane, "Invalid username or password.");
-                }
-        }
-
-        private boolean attemptLogin(String user_id, String pass) {
-                try (Connection conn = DatabaseManager.getConnection()) {
-                        String sql = "SELECT * FROM users WHERE username=? AND password=?";
-                        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                                stmt.setString(1, user_id);
-                                stmt.setString(2, pass);
-                                try (ResultSet rs = stmt.executeQuery()) {
-                                        return rs.next();
-                                }
-                        }
-                } catch (SQLException e) {
-                        logger.log(Level.SEVERE, "SQL error occurred :", e);
-                        return false;
-                }
-        }
-
-        private int getUserId(String username) {
-                try (Connection conn = DatabaseManager.getConnection()) {
-                        String sql = "SELECT id FROM users WHERE username=?";
-                        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                                stmt.setString(1, username);
-                                try (ResultSet rs = stmt.executeQuery()) {
-                                        if (rs.next()) {
-                                                return rs.getInt("id");
-                                        }
-                                }
-                        }
-                } catch (SQLException e) {
-                        logger.log(Level.SEVERE, "SQL error occurred :", e);
-                }
-                return -1;
+                // Delegate login handling to the controller
+                loginController.handleLogin(user_id, pass, this);
         }
 
         public static void main(String args[]) {
-                java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
+                java.awt.EventQueue.invokeLater(() -> new LoginView().setVisible(true));
         }
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
