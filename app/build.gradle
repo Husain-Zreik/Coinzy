@@ -22,12 +22,15 @@ dependencies {
     implementation 'org.openjfx:javafx:22.0.2'
 
     implementation 'ch.qos.logback:logback-classic:1.5.7'
-
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation 'org.knowm.xchart:xchart:3.8.8'
     implementation 'com.toedter:jcalendar:1.4'
     implementation files('libs/absolute-layout.jar')
+    implementation files('libs/spring-core-5.3.39.jar')
+    implementation files('libs/spring-context-5.3.39.jar')
+    implementation files('libs/spring-beans-5.3.39.jar')
+
 
     // This dependency is used by the application.
     implementation libs.guava
