@@ -44,4 +44,36 @@ public class UserProvider {
         }
         return -1; // Return -1 if user not found or error occurs
     }
+
+    public boolean isUserExists(String username) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "SELECT * FROM users WHERE username = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                pstmt.setString(1, username);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred during user existence check", e);
+        }
+        return false;
+    }
+
+    public boolean createUser(String name, String username, String password) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "INSERT INTO users(name, username, password) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                pstmt.setString(1, name);
+                pstmt.setString(2, username);
+                pstmt.setString(3, password);
+
+                int rowsInserted = pstmt.executeUpdate();
+                return rowsInserted > 0;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred during user creation", e);
+        }
+        return false;
+    }
 }
