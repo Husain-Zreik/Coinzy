@@ -1,42 +1,25 @@
 package Coinzy.views.authentication;
 
-import java.awt.HeadlessException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.*;
+import Coinzy.controllers.authentication.SignupController;
 
-import Coinzy.database.DatabaseManager;
+public class SignupView extends javax.swing.JFrame {
+        private final SignupController signupController;
 
-class PasswordException extends Exception {
-        public PasswordException(String message) {
-                super(message);
-        }
-}
-
-public class SignUp extends javax.swing.JFrame {
-        private static final Logger logger = Logger.getLogger(SignUp.class.getName());
-
-        public SignUp() {
+        public SignupView() {
                 initComponents();
+                signupController = new SignupController(this);
+                signupController.setLoginView(new LoginView());
         }
 
-        private void passwordRestrictions(String password) throws PasswordException {
-                int minLength = 8;
+        public void displayError(String message) {
+                JOptionPane.showMessageDialog(this, message);
+        }
 
-                if (password.length() < minLength) {
-                        throw new PasswordException("Password should be at least " + minLength + " characters long.");
-                }
-
-                Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
-                Matcher matcher = pattern.matcher(password);
-                if (!matcher.find()) {
-                        throw new PasswordException("Password should contain at least one special character.");
-                }
+        public void clearFields() {
+                name.setText("");
+                username.setText("");
+                password.setText("");
         }
 
         // <editor-fold defaultstate="collapsed" desc="Generated
@@ -293,73 +276,16 @@ public class SignUp extends javax.swing.JFrame {
 
         private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
 
-                try {
-                        DatabaseManager.connect();
+                String name1 = name.getText();
+                String username1 = username.getText();
+                String password1 = new String(password.getPassword());
 
-                        String name1 = name.getText();
-                        String username1 = username.getText();
-                        String password1 = new String(password.getPassword());
-
-                        if (name1.isEmpty() || username1.isEmpty() || password1.isEmpty()) {
-                                StringBuilder errorMessage = new StringBuilder(
-                                                "Please fill in the following field(s):");
-                                if (name1.isEmpty()) {
-                                        errorMessage.append("\n- Name");
-                                }
-                                if (username1.isEmpty()) {
-                                        errorMessage.append("\n- Username");
-                                }
-                                if (password1.isEmpty()) {
-                                        errorMessage.append("\n- Password");
-                                }
-                                JOptionPane.showMessageDialog(this, errorMessage.toString());
-                                return;
-                        }
-
-                        passwordRestrictions(password1);
-
-                        String query = "SELECT * FROM users WHERE username = ?";
-                        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
-                                pstmt.setString(1, username1);
-                                try (ResultSet rs = pstmt.executeQuery()) {
-                                        if (rs.next()) {
-                                                JOptionPane.showMessageDialog(this,
-                                                                "Username already exists. Please choose another one.");
-                                                return;
-                                        }
-                                }
-                        }
-
-                        query = "INSERT INTO users(name, username, password) VALUES (?, ?, ?)";
-                        try (PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query)) {
-                                pstmt.setString(1, name1);
-                                pstmt.setString(2, username1);
-                                pstmt.setString(3, password1);
-
-                                int rowsInserted = pstmt.executeUpdate();
-                                if (rowsInserted > 0) {
-                                        name.setText("");
-                                        username.setText("");
-                                        password.setText("");
-                                        JOptionPane.showMessageDialog(this, "Account successfully created!");
-                                }
-                        }
-
-                } catch (PasswordException ex) {
-                        JOptionPane.showMessageDialog(this, "Password error: " + ex.getMessage());
-                        logger.log(Level.WARNING, "Password error occurred", ex);
-                } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(this,
-                                        "Error occurred while creating account: " + ex.getMessage());
-                        logger.log(Level.SEVERE, "SQL error occurred", ex);
-                } catch (HeadlessException ex) {
-                        logger.log(Level.SEVERE, "An unexpected error occurred: ", ex);
-                }
+                signupController.signup(name1, username1, password1);
 
         }// GEN-LAST:event_jButton1ActionPerformed
 
         private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
-                Login LoginFrame = new Login();
+                LoginView LoginFrame = new LoginView();
                 LoginFrame.setVisible(true);
                 LoginFrame.pack();
                 LoginFrame.setLocationRelativeTo(null);
@@ -367,7 +293,7 @@ public class SignUp extends javax.swing.JFrame {
         }// GEN-LAST:event_jButton2ActionPerformed
 
         public static void main(String args[]) {
-                java.awt.EventQueue.invokeLater(() -> new SignUp().setVisible(true));
+                java.awt.EventQueue.invokeLater(() -> new SignupView().setVisible(true));
         }
 
         // Variables declaration - do not modify//GEN-BEGIN:variables

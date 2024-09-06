@@ -7,7 +7,7 @@ import Coinzy.views.user.home.HomePage;
 import javax.swing.JOptionPane;
 
 public class LoginController {
-    private UserProvider userProvider;
+    private final UserProvider userProvider;
 
     public LoginController() {
         userProvider = new UserProvider();
