@@ -1,7 +1,7 @@
 package Coinzy.controllers.authentication;
 
 import Coinzy.providers.UserProvider;
-import Coinzy.models.UserSession;
+import Coinzy.sessions.UserSession;
 import Coinzy.views.user.home.HomePage;
 
 import javax.swing.JOptionPane;

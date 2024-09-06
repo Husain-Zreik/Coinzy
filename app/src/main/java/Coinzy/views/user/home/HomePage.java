@@ -4,7 +4,7 @@ import Coinzy.views.user.chart.IncomeExpenseChart;
 import javax.swing.table.DefaultTableModel;
 import Coinzy.views.authentication.LoginView;
 import Coinzy.database.DatabaseManager;
-import Coinzy.models.UserSession;
+import Coinzy.sessions.UserSession;
 
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;

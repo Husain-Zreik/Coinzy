@@ -14,7 +14,7 @@ import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.SwingWrapper;
 
 import Coinzy.database.DatabaseManager;
-import Coinzy.models.UserSession;
+import Coinzy.sessions.UserSession;
 
 public class IncomeExpenseChart {
 
