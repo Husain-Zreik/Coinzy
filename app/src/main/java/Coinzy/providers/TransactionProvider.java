@@ -3,58 +3,111 @@ package Coinzy.providers;
 import Coinzy.database.DatabaseManager;
 import Coinzy.models.Transaction;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TransactionProvider {
     private static final Logger logger = Logger.getLogger(TransactionProvider.class.getName());
 
-    public Transaction getTransactionById(int id) {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "SELECT * FROM transactions WHERE id=?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        Transaction transaction = new Transaction();
-                        transaction.setId(rs.getInt("id"));
-                        transaction.setAccountId(rs.getInt("account_id"));
-                        transaction.setType(rs.getString("type"));
-                        transaction.setAmount(rs.getDouble("amount"));
-                        transaction.setStatement(rs.getString("statement"));
-                        transaction.setTime(rs.getTimestamp("time"));
-                        return transaction;
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "SQL error occurred when fetching transaction by ID", e);
-        }
-        return null; // Return null if transaction not found or error occurs
-    }
-
+    // Create a new transaction
     public boolean createTransaction(Transaction transaction) {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO transactions(account_id, type, amount, statement, time) VALUES (?, ?, ?, ?, ?)";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, transaction.getAccountId());
-                stmt.setString(2, transaction.getType());
-                stmt.setDouble(3, transaction.getAmount());
-                stmt.setString(4, transaction.getStatement());
-                stmt.setTimestamp(5, transaction.getTime());
+        String sql = "INSERT INTO transactions (wallet_id, amount, transaction_type, description, timestamp) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, transaction.getWalletId());
+            pstmt.setBigDecimal(2, transaction.getAmount());
+            pstmt.setString(3, transaction.getType());
+            pstmt.setString(4, transaction.getDescription());
+            pstmt.setTimestamp(5, transaction.getTimestamp());
 
-                int rowsInserted = stmt.executeUpdate();
-                return rowsInserted > 0;
-            }
+            int rowsInserted = pstmt.executeUpdate();
+            return rowsInserted > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQL error occurred during transaction creation", e);
         }
         return false;
     }
 
-    // Add more methods as needed (e.g., updateTransaction, deleteTransaction)
+    // Get a transaction by ID
+    public Transaction getTransactionById(int id) {
+        String sql = "SELECT * FROM transactions WHERE id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToTransaction(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching transaction by ID", e);
+        }
+        return null;
+    }
+
+    // Update a transaction
+    public boolean updateTransaction(Transaction transaction) {
+        String sql = "UPDATE transactions SET wallet_id = ?, amount = ?, transaction_type = ?, description = ?, timestamp = ? WHERE id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, transaction.getWalletId());
+            pstmt.setBigDecimal(2, transaction.getAmount());
+            pstmt.setString(3, transaction.getType());
+            pstmt.setString(4, transaction.getDescription());
+            pstmt.setTimestamp(5, transaction.getTimestamp());
+            pstmt.setInt(6, transaction.getId());
+
+            int rowsUpdated = pstmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred during transaction update", e);
+        }
+        return false;
+    }
+
+    // Delete a transaction
+    public boolean deleteTransaction(int id) {
+        String sql = "DELETE FROM transactions WHERE id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int rowsDeleted = pstmt.executeUpdate();
+            return rowsDeleted > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred during transaction deletion", e);
+        }
+        return false;
+    }
+
+    // Get all transactions for a wallet
+    public List<Transaction> getTransactionsByWalletId(int walletId) {
+        List<Transaction> transactions = new ArrayList<>();
+        String sql = "SELECT * FROM transactions WHERE wallet_id = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, walletId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    transactions.add(mapRowToTransaction(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching transactions by wallet ID", e);
+        }
+        return transactions;
+    }
+
+    // Map ResultSet to Transaction
+    private Transaction mapRowToTransaction(ResultSet rs) throws SQLException {
+        return new Transaction(
+                rs.getInt("id"),
+                rs.getInt("wallet_id"),
+                rs.getString("transaction_type"),
+                rs.getBigDecimal("amount"),
+                rs.getString("description"),
+                rs.getTimestamp("timestamp"));
+    }
 }
