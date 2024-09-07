@@ -30,6 +30,8 @@ dependencies {
     implementation files('libs/spring-core-5.3.39.jar')
     implementation files('libs/spring-context-5.3.39.jar')
     implementation files('libs/spring-beans-5.3.39.jar')
+    implementation files('libs/spring-aop-5.3.39.jar')
+    implementation files('libs/spring-expression-5.3.39.jar')
 
 
     // This dependency is used by the application.
