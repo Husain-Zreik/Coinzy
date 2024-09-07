@@ -1,15 +1,33 @@
 package Coinzy.models;
 
-import java.sql.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class Expense {
     private int id;
     private int userId;
-    private int accountId;
-    private Date expenseDate;
-    private int expenseCategory;
-    private String remark;
-    private double amount;
+    private int categoryId;
+    private BigDecimal amount;
+    private LocalDate expenseDate; // Changed to LocalDate
+    private String recurrencePattern;
+    private String note;
+
+    // Default constructor
+    public Expense() {
+    }
+
+    // Parameterized constructor
+    public Expense(int id, int userId, int categoryId, BigDecimal amount, LocalDate expenseDate,
+            String recurrencePattern,
+            String note) {
+        this.id = id;
+        this.userId = userId;
+        this.categoryId = categoryId;
+        this.amount = amount;
+        this.expenseDate = expenseDate;
+        this.recurrencePattern = recurrencePattern;
+        this.note = note;
+    }
 
     // Getters and Setters
     public int getId() {
@@ -28,43 +46,56 @@ public class Expense {
         this.userId = userId;
     }
 
-    public int getAccountId() {
-        return accountId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public Date getExpenseDate() {
-        return expenseDate;
-    }
-
-    public void setExpenseDate(Date expenseDate) {
-        this.expenseDate = expenseDate;
-    }
-
-    public int getExpenseCategory() {
-        return expenseCategory;
-    }
-
-    public void setExpenseCategory(int expenseCategory) {
-        this.expenseCategory = expenseCategory;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public LocalDate getExpenseDate() {
+        return expenseDate;
+    }
+
+    public void setExpenseDate(LocalDate expenseDate) {
+        this.expenseDate = expenseDate;
+    }
+
+    public String getRecurrencePattern() {
+        return recurrencePattern;
+    }
+
+    public void setRecurrencePattern(String recurrencePattern) {
+        this.recurrencePattern = recurrencePattern;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", categoryId=" + categoryId +
+                ", amount=" + amount +
+                ", expenseDate=" + expenseDate +
+                ", recurrencePattern='" + recurrencePattern + '\'' +
+                ", note='" + note + '\'' +
+                '}';
     }
 }

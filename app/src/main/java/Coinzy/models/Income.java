@@ -1,14 +1,32 @@
 package Coinzy.models;
 
-import java.sql.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class Income {
     private int id;
     private int userId;
-    private int accountId;
-    private Date incomeDate;
-    private String incomeSource;
-    private double amount;
+    private int categoryId;
+    private BigDecimal amount;
+    private LocalDate incomeDate; // Use LocalDate instead of java.sql.Date
+    private String recurrencePattern;
+    private String note;
+
+    // Default constructor
+    public Income() {
+    }
+
+    // Parameterized constructor
+    public Income(int id, int userId, int categoryId, BigDecimal amount, LocalDate incomeDate, String recurrencePattern,
+            String note) {
+        this.id = id;
+        this.userId = userId;
+        this.categoryId = categoryId;
+        this.amount = amount;
+        this.incomeDate = incomeDate;
+        this.recurrencePattern = recurrencePattern;
+        this.note = note;
+    }
 
     // Getters and Setters
     public int getId() {
@@ -27,35 +45,56 @@ public class Income {
         this.userId = userId;
     }
 
-    public int getAccountId() {
-        return accountId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public Date getIncomeDate() {
-        return incomeDate;
-    }
-
-    public void setIncomeDate(Date incomeDate) {
-        this.incomeDate = incomeDate;
-    }
-
-    public String getIncomeSource() {
-        return incomeSource;
-    }
-
-    public void setIncomeSource(String incomeSource) {
-        this.incomeSource = incomeSource;
-    }
-
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public LocalDate getIncomeDate() {
+        return incomeDate;
+    }
+
+    public void setIncomeDate(LocalDate incomeDate) {
+        this.incomeDate = incomeDate;
+    }
+
+    public String getRecurrencePattern() {
+        return recurrencePattern;
+    }
+
+    public void setRecurrencePattern(String recurrencePattern) {
+        this.recurrencePattern = recurrencePattern;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    @Override
+    public String toString() {
+        return "Income{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", categoryId=" + categoryId +
+                ", amount=" + amount +
+                ", incomeDate=" + incomeDate +
+                ", recurrencePattern='" + recurrencePattern + '\'' +
+                ", note='" + note + '\'' +
+                '}';
     }
 }

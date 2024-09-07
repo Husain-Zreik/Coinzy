@@ -1,14 +1,29 @@
 package Coinzy.models;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Transaction {
     private int id;
-    private int accountId;
+    private int walletId;
     private String type;
-    private double amount;
-    private String statement;
-    private Timestamp time;
+    private BigDecimal amount;
+    private String description;
+    private Timestamp timestamp;
+
+    // Default constructor
+    public Transaction() {
+    }
+
+    // Parameterized constructor
+    public Transaction(int id, int walletId, String type, BigDecimal amount, String description, Timestamp timestamp) {
+        this.id = id;
+        this.walletId = walletId;
+        this.type = type;
+        this.amount = amount;
+        this.description = description;
+        this.timestamp = timestamp;
+    }
 
     // Getters and Setters
     public int getId() {
@@ -19,12 +34,12 @@ public class Transaction {
         this.id = id;
     }
 
-    public int getAccountId() {
-        return accountId;
+    public int getWalletId() {
+        return walletId;
     }
 
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
+    public void setWalletId(int walletId) {
+        this.walletId = walletId;
     }
 
     public String getType() {
@@ -35,27 +50,39 @@ public class Transaction {
         this.type = type;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public String getStatement() {
-        return statement;
+    public String getDescription() {
+        return description;
     }
 
-    public void setStatement(String statement) {
-        this.statement = statement;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Timestamp getTime() {
-        return time;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
-    public void setTime(Timestamp time) {
-        this.time = time;
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", walletId=" + walletId +
+                ", type='" + type + '\'' +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }
