@@ -3,6 +3,7 @@ package Coinzy.controllers.authentication;
 import Coinzy.providers.UserProvider;
 import Coinzy.views.authentication.LoginView;
 import Coinzy.views.authentication.SignupView;
+import Coinzy.models.User;
 
 import javax.swing.*;
 import java.util.regex.Matcher;
@@ -25,13 +26,15 @@ public class SignupController {
         this.loginView = loginView;
     }
 
-    public void signup(String name, String username, String password) {
-        if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
+    public void signup(String name, String username, String email, String password, int roleId) {
+        if (name.isEmpty() || username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             StringBuilder errorMessage = new StringBuilder("Please fill in the following field(s):");
             if (name.isEmpty())
                 errorMessage.append("\n- Name");
             if (username.isEmpty())
                 errorMessage.append("\n- Username");
+            if (email.isEmpty())
+                errorMessage.append("\n- Email");
             if (password.isEmpty())
                 errorMessage.append("\n- Password");
 
@@ -47,7 +50,17 @@ public class SignupController {
                 return;
             }
 
-            boolean success = userProvider.createUser(name, username, password);
+            // Create User object
+            User user = new User();
+            user.setName(name);
+            user.setUsername(username);
+            user.setEmail(email); // Set email
+            user.setPassword(password);
+            user.setRoleId(roleId); // Set role ID based on radio button selection
+            user.setStatus("pending");
+            user.setOwnerId(null); // or set to appropriate value if applicable
+
+            boolean success = userProvider.createUser(user);
             if (success) {
                 view.clearFields();
                 JOptionPane.showMessageDialog(view, "Account successfully created!");
