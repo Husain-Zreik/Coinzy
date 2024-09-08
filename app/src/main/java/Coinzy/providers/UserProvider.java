@@ -1,13 +1,18 @@
 package Coinzy.providers;
 
-import Coinzy.database.DatabaseManager;
-import Coinzy.models.User;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import Coinzy.database.DatabaseManager;
+import Coinzy.models.User;
 
 public class UserProvider {
     private static final Logger logger = Logger.getLogger(UserProvider.class.getName());
@@ -50,6 +55,45 @@ public class UserProvider {
             logger.log(Level.SEVERE, "SQL error occurred when fetching user by ID", e);
         }
         return null;
+    }
+
+    // Fetch users by status (Pending, Accepted, Declined)
+    public List<User> getUsersByStatus(String status) {
+        List<User> users = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "SELECT * FROM users WHERE status = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, status);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                        users.add(mapRowToUser(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching users by status", e);
+        }
+        return users;
+    }
+
+    public boolean updateStatus(int userId, String newStatus) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "UPDATE users SET status = ? WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, newStatus);
+                pstmt.setInt(2, userId);
+                // Log the SQL execution
+                System.out.println("Executing SQL update: " + pstmt.toString());
+                int rowsUpdated = pstmt.executeUpdate();
+                System.out.println("Rows updated: " + rowsUpdated);
+                return rowsUpdated > 0;
+            }
+        } catch (SQLException e) {
+            // Log and print exception details
+            logger.log(Level.SEVERE, "SQL error occurred during user status update", e);
+            e.printStackTrace(); // Print stack trace for debugging
+        }
+        return false;
     }
 
     // Update a user

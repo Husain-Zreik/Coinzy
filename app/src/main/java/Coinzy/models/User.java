@@ -72,6 +72,15 @@ public class User {
         return roleId;
     }
 
+    public String getRoleName() {
+        return switch (roleId) {
+            case 1 -> "Admin";
+            case 2 -> "Manager";
+            case 3 -> "Member";
+            default -> "Unknown";
+        };
+    }
+
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
