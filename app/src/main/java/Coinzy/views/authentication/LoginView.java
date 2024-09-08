@@ -16,10 +16,10 @@ public class LoginView extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        Right = new javax.swing.JPanel();
+        Left = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        Left = new javax.swing.JPanel();
+        Right = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         username = new javax.swing.JTextField();
@@ -35,8 +35,8 @@ public class LoginView extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));
         jPanel1.setLayout(null);
 
-        Right.setBackground(new java.awt.Color(0, 102, 102));
-        Right.setPreferredSize(new java.awt.Dimension(400, 500));
+        Left.setBackground(new java.awt.Color(0, 102, 102));
+        Left.setPreferredSize(new java.awt.Dimension(400, 500));
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/logo.png"))); // NOI18N
 
@@ -44,23 +44,23 @@ public class LoginView extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Finance Mangement");
 
-        javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
-        Right.setLayout(RightLayout);
-        RightLayout.setHorizontalGroup(
-            RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(RightLayout.createSequentialGroup()
-                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(RightLayout.createSequentialGroup()
+        javax.swing.GroupLayout LeftLayout = new javax.swing.GroupLayout(Left);
+        Left.setLayout(LeftLayout);
+        LeftLayout.setHorizontalGroup(
+            LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(LeftLayout.createSequentialGroup()
+                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(LeftLayout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(RightLayout.createSequentialGroup()
+                    .addGroup(LeftLayout.createSequentialGroup()
                         .addGap(92, 92, 92)
                         .addComponent(jLabel5)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        RightLayout.setVerticalGroup(
-            RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(RightLayout.createSequentialGroup()
+        LeftLayout.setVerticalGroup(
+            LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(LeftLayout.createSequentialGroup()
                 .addGap(116, 116, 116)
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
@@ -68,11 +68,11 @@ public class LoginView extends javax.swing.JFrame {
                 .addContainerGap(208, Short.MAX_VALUE))
         );
 
-        jPanel1.add(Right);
-        Right.setBounds(0, 0, 290, 500);
+        jPanel1.add(Left);
+        Left.setBounds(0, 0, 290, 500);
 
-        Left.setBackground(new java.awt.Color(255, 255, 255));
-        Left.setMinimumSize(new java.awt.Dimension(400, 500));
+        Right.setBackground(new java.awt.Color(255, 255, 255));
+        Right.setMinimumSize(new java.awt.Dimension(400, 500));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
@@ -121,34 +121,34 @@ public class LoginView extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout LeftLayout = new javax.swing.GroupLayout(Left);
-        Left.setLayout(LeftLayout);
-        LeftLayout.setHorizontalGroup(
-            LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
+        Right.setLayout(RightLayout);
+        RightLayout.setHorizontalGroup(
+            RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(LeftLayout.createSequentialGroup()
+            .addGroup(RightLayout.createSequentialGroup()
                 .addGap(84, 84, 84)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 86, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RightLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RightLayout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2)
                         .addGap(157, 157, 157))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LeftLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RightLayout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(203, 203, 203))))
         );
-        LeftLayout.setVerticalGroup(
-            LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(LeftLayout.createSequentialGroup()
+        RightLayout.setVerticalGroup(
+            RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(RightLayout.createSequentialGroup()
                 .addGap(88, 88, 88)
                 .addComponent(jLabel1)
                 .addGap(46, 46, 46)
@@ -162,14 +162,14 @@ public class LoginView extends javax.swing.JFrame {
                 .addGap(39, 39, 39)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
-                .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jButton2))
                 .addGap(22, 22, 22))
         );
 
-        jPanel1.add(Left);
-        Left.setBounds(290, 0, 510, 500);
+        jPanel1.add(Right);
+        Right.setBounds(290, 0, 510, 500);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
