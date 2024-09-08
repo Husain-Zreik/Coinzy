@@ -1,8 +1,5 @@
 package Coinzy.providers;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,17 +7,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import Coinzy.database.DatabaseManager;
 import Coinzy.models.User;
 
 public class UserProvider {
     private static final Logger logger = Logger.getLogger(UserProvider.class.getName());
-    private static final String SALT = generateSalt(); // Generate a salt once and use it for all hashes
+
+    // Hash a password using bcrypt
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+    // Check if a password is valid
+    private boolean checkPassword(String password, String hashed) {
+        return BCrypt.checkpw(password, hashed);
+    }
 
     // Create a new user
     public boolean createUser(User user) {
@@ -30,7 +37,7 @@ public class UserProvider {
                 pstmt.setString(1, user.getName());
                 pstmt.setString(2, user.getEmail());
                 pstmt.setString(3, user.getUsername());
-                pstmt.setString(4, hashPassword(user.getPassword())); // Hash password before storing
+                pstmt.setString(4, hashPassword(user.getPassword())); // Hash the password
                 pstmt.setInt(5, user.getRoleId());
                 pstmt.setString(6, user.getStatus());
                 pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
@@ -44,7 +51,30 @@ public class UserProvider {
         return false;
     }
 
-    // Validate user credentials
+    // Update a user
+    public boolean updateUser(User user) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "UPDATE users SET name = ?, email = ?, username = ?, password = ?, role_id = ?, status = ?, owner_id = ? WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, user.getName());
+                pstmt.setString(2, user.getEmail());
+                pstmt.setString(3, user.getUsername());
+                pstmt.setString(4, hashPassword(user.getPassword())); // Hash the password
+                pstmt.setInt(5, user.getRoleId());
+                pstmt.setString(6, user.getStatus());
+                pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
+                pstmt.setInt(8, user.getId());
+
+                int rowsUpdated = pstmt.executeUpdate();
+                return rowsUpdated > 0;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred during user update", e);
+        }
+        return false;
+    }
+
+    // Check if username and password are valid
     public boolean isValidUser(String username, String password) {
         try (Connection conn = DatabaseManager.getConnection()) {
             String sql = "SELECT password FROM users WHERE username = ?";
@@ -53,8 +83,7 @@ public class UserProvider {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
                         String hashedPassword = rs.getString("password");
-                        return hashPassword(password).equals(hashedPassword); // Check if the provided password matches
-                                                                              // the hashed password
+                        return checkPassword(password, hashedPassword); // Check hashed password
                     }
                 }
             }
@@ -64,32 +93,21 @@ public class UserProvider {
         return false;
     }
 
-    // Hash the password using SHA-256 with salt
-    private String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(SALT.getBytes()); // Add salt to the hash
-            byte[] hashedPassword = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hashedPassword);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error hashing password", e);
+    public User getUser(String identifier) {
+        String sql;
+        boolean isNumeric = identifier.chars().allMatch(Character::isDigit);
+
+        if (isNumeric) {
+            sql = "SELECT * FROM users WHERE id = ?";
+        } else if (identifier.contains("@")) {
+            sql = "SELECT * FROM users WHERE email = ?";
+        } else {
+            sql = "SELECT * FROM users WHERE username = ?";
         }
-    }
 
-    // Generate a salt
-    private static String generateSalt() {
-        SecureRandom sr = new SecureRandom();
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
-    }
-
-    // Get a user by ID
-    public User getUserById(int id) {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "SELECT * FROM users WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, id);
+                pstmt.setString(1, identifier);
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
                         return mapRowToUser(rs);
@@ -97,7 +115,7 @@ public class UserProvider {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "SQL error occurred when fetching user by ID", e);
+            logger.log(Level.SEVERE, "SQL error occurred when fetching user", e);
         }
         return null;
     }
@@ -168,29 +186,6 @@ public class UserProvider {
             logger.log(Level.SEVERE, "SQL error occurred during user search", e);
         }
         return users;
-    }
-
-    // Update a user
-    public boolean updateUser(User user) {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "UPDATE users SET name = ?, email = ?, username = ?, password = ?, role_id = ?, status = ?, owner_id = ? WHERE id = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, user.getName());
-                pstmt.setString(2, user.getEmail());
-                pstmt.setString(3, user.getUsername());
-                pstmt.setString(4, user.getPassword());
-                pstmt.setInt(5, user.getRoleId());
-                pstmt.setString(6, user.getStatus());
-                pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
-                pstmt.setInt(8, user.getId());
-
-                int rowsUpdated = pstmt.executeUpdate();
-                return rowsUpdated > 0;
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "SQL error occurred during user update", e);
-        }
-        return false;
     }
 
     // Delete a user
