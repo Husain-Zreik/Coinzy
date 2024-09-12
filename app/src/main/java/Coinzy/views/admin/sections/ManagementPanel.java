@@ -4,17 +4,20 @@ import java.awt.Color;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import Coinzy.controllers.admin.ManagementController;
 import Coinzy.models.User;
+import Coinzy.views.admin.modals.AddUserView;
 
 public class ManagementPanel extends javax.swing.JPanel {
     private JTable managementTable;
@@ -219,7 +222,10 @@ public class ManagementPanel extends javax.swing.JPanel {
     // Action to handle adding a user
     private void addUser() {
         // Show modal dialog to add a new user
-        // ...
+        AddUserView userDialog = new AddUserView(); // Pass 'this' as the parent frame
+        userDialog.setVisible(true);
+        // Reload users if the dialog was closed and user was added
+        loadUsers();
     }
 
     // Action to handle editing a user
