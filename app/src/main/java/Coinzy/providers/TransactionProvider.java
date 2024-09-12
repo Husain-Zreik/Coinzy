@@ -1,13 +1,16 @@
 package Coinzy.providers;
 
-import Coinzy.database.DatabaseManager;
-import Coinzy.models.Transaction;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import Coinzy.database.DatabaseManager;
+import Coinzy.models.Transaction;
 
 public class TransactionProvider {
     private static final Logger logger = Logger.getLogger(TransactionProvider.class.getName());
@@ -98,6 +101,68 @@ public class TransactionProvider {
             logger.log(Level.SEVERE, "SQL error occurred when fetching transactions by wallet ID", e);
         }
         return transactions;
+    }
+
+    // Get total number of transactions
+    public int getTotalTransactionCount() {
+        String sql = "SELECT COUNT(*) FROM transactions";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching total transaction count", e);
+        }
+        return 0;
+    }
+
+    // Get number of transactions by status (assuming status column exists)
+    public int getTransactionsByStatusCount(String status) {
+        String sql = "SELECT COUNT(*) FROM transactions WHERE status = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching transaction count by status", e);
+        }
+        return 0;
+    }
+
+    // Get total revenue from completed transactions
+    public double getTotalRevenue() {
+        String sql = "SELECT SUM(amount) FROM transactions WHERE transaction_type = 'credit'"; // Adjust as needed
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching total revenue", e);
+        }
+        return 0.0;
+    }
+
+    // Get total expenses from transactions (assuming 'debit' indicates expenses)
+    public double getTotalExpenses() {
+        String sql = "SELECT SUM(amount) FROM transactions WHERE transaction_type = 'debit'"; // Adjust as needed
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching total expenses", e);
+        }
+        return 0.0;
     }
 
     // Map ResultSet to Transaction

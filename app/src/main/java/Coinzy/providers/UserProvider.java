@@ -5,9 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,10 +33,9 @@ public class UserProvider {
         return BCrypt.checkpw(password, hashed);
     }
 
-    // Create a new user
     public boolean createUser(User user) {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO users (name, email, username, password, role_id, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO users (name, email, username, password, role_id, status, owner_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getName());
                 pstmt.setString(2, user.getEmail());
@@ -41,6 +44,7 @@ public class UserProvider {
                 pstmt.setInt(5, user.getRoleId());
                 pstmt.setString(6, user.getStatus());
                 pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
+                pstmt.setTimestamp(8, new Timestamp(System.currentTimeMillis())); // Set the current time if null
 
                 int rowsInserted = pstmt.executeUpdate();
                 return rowsInserted > 0;
@@ -51,10 +55,10 @@ public class UserProvider {
         return false;
     }
 
-    // Update a user
+    // Update a user with created_at attribute
     public boolean updateUser(User user) {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "UPDATE users SET name = ?, email = ?, username = ?, password = ?, role_id = ?, status = ?, owner_id = ? WHERE id = ?";
+            String sql = "UPDATE users SET name = ?, email = ?, username = ?, password = ?, role_id = ?, status = ?, owner_id = ?, created_at = ? WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getName());
                 pstmt.setString(2, user.getEmail());
@@ -63,7 +67,8 @@ public class UserProvider {
                 pstmt.setInt(5, user.getRoleId());
                 pstmt.setString(6, user.getStatus());
                 pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
-                pstmt.setInt(8, user.getId());
+                pstmt.setTimestamp(8, user.getCreatedAt()); // Update created_at timestamp
+                pstmt.setInt(9, user.getId());
 
                 int rowsUpdated = pstmt.executeUpdate();
                 return rowsUpdated > 0;
@@ -237,7 +242,6 @@ public class UserProvider {
         return false;
     }
 
-    // Get all users
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -254,7 +258,72 @@ public class UserProvider {
         return users;
     }
 
-    // Map ResultSet to User
+    public int getTotalUsersCount() {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "SELECT COUNT(*) AS total FROM users";
+            try (Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql)) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching total users", e);
+        }
+        return 0;
+    }
+
+    // Get count of users by status (active, pending, etc.)
+    public int getUsersByStatusCount(String status) {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "SELECT COUNT(*) AS total FROM users WHERE status = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, status);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("total");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching users by status", e);
+        }
+        return 0;
+    }
+
+    public Map<String, Integer> getUserGrowthByMonth() {
+        Map<String, Integer> userGrowth = new LinkedHashMap<>(); // LinkedHashMap maintains insertion order
+
+        // Get the current year
+        int currentYear = LocalDate.now().getYear();
+
+        // SQL query to retrieve user counts by month for the current year
+        String query = "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS user_count " +
+                "FROM users " +
+                "WHERE YEAR(created_at) = ? " +
+                "GROUP BY month " +
+                "ORDER BY month ASC";
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Set the current year in the query
+            stmt.setInt(1, currentYear);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String month = rs.getString("month");
+                    int count = rs.getInt("user_count");
+                    userGrowth.put(month, count);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred when fetching user growth", e);
+        }
+
+        return userGrowth;
+    }
+
     private User mapRowToUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("id"),
@@ -264,6 +333,7 @@ public class UserProvider {
                 rs.getString("password"),
                 rs.getInt("role_id"),
                 rs.getString("status"),
-                (Integer) rs.getObject("owner_id"));
+                (Integer) rs.getObject("owner_id"),
+                rs.getTimestamp("created_at")); // Ensure created_at is treated as a Timestamp
     }
 }

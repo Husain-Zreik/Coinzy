@@ -1,5 +1,7 @@
 package Coinzy.models;
 
+import java.sql.Timestamp;
+
 public class User {
     private int id;
     private String name;
@@ -9,6 +11,7 @@ public class User {
     private int roleId;
     private String status;
     private Integer ownerId;
+    private Timestamp createdAt; // New attribute to track user creation time
 
     // Default constructor
     public User() {
@@ -16,7 +19,7 @@ public class User {
 
     // Parameterized constructor
     public User(int id, String name, String email, String username, String password, int roleId, String status,
-            Integer ownerId) {
+            Integer ownerId, Timestamp createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -25,6 +28,7 @@ public class User {
         this.roleId = roleId;
         this.status = status;
         this.ownerId = ownerId;
+        this.createdAt = createdAt; // Initialize the new attribute
     }
 
     // Getters and Setters
@@ -101,6 +105,14 @@ public class User {
         this.ownerId = ownerId;
     }
 
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -112,6 +124,7 @@ public class User {
                 ", roleId=" + roleId +
                 ", status='" + status + '\'' +
                 ", ownerId=" + ownerId +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }
