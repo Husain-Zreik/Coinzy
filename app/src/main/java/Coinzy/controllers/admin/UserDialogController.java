@@ -81,4 +81,38 @@ public class UserDialogController {
             throw new Exception("Password should contain at least one special character.");
         }
     }
+
+    public void updateUser(User user, User oldUser) {
+        if (user == null) {
+            view.displayError("User data is missing.");
+            return;
+        }
+
+        try {
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                validatePassword(user.getPassword()); // Validate password if updated
+            }
+            if (!user.getUsername().equals(oldUser.getUsername())
+                    && (user.getUsername() != null && !user.getUsername().isEmpty())) {
+                if (userProvider.isUserExists(user.getUsername())) {
+                    view.displayError("Username already exists. Please choose another one.");
+                    return;
+                }
+            }
+
+            boolean success = userProvider.updateUser(user, oldUser);
+            if (success) {
+                view.clearFields();
+                JOptionPane.showMessageDialog(view, "User successfully updated!");
+                view.dispose(); // Close the dialog
+            } else {
+                view.displayError("Error updating user.");
+            }
+
+        } catch (Exception e) {
+            view.displayError("Error: " + e.getMessage());
+            logger.log(Level.SEVERE, "User update error occurred", e);
+        }
+    }
+
 }

@@ -194,6 +194,7 @@ public class ManagementPanel extends javax.swing.JPanel {
                 statusLabel.setText("No users found.");
                 showEmptyState(); // Show empty state if no users are found
             } else {
+                users = searchResults; // Update the users list with search results
                 populateTable(searchResults);
             }
         }
@@ -230,8 +231,16 @@ public class ManagementPanel extends javax.swing.JPanel {
 
     // Action to handle editing a user
     private void editUser() {
-        // Edit selected user
-        // ...
+        int selectedRow = managementTable.getSelectedRow();
+        if (selectedRow != -1) {
+            User user = users.get(selectedRow);
+            AddUserView userDialog = new AddUserView(user); // Pass the user to be edited
+            userDialog.setVisible(true);
+            // Reload users if the dialog was closed and user was edited
+            loadUsers();
+        } else {
+            statusLabel.setText("Please select a user to edit.");
+        }
     }
 
     // Action to handle deleting a user

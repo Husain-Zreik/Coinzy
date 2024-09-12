@@ -4,9 +4,12 @@
  */
 package Coinzy.views.admin.modals;
 
+import java.sql.Timestamp;
+
 import javax.swing.JOptionPane;
 
 import Coinzy.controllers.admin.UserDialogController;
+import Coinzy.models.User;
 
 /**
  *
@@ -14,6 +17,7 @@ import Coinzy.controllers.admin.UserDialogController;
  */
 public class AddUserView extends javax.swing.JFrame {
     private final UserDialogController userDialogController;
+    private User userToEdit; // New field to store the user being edited
 
     /**
      * Creates new form AddUserView
@@ -22,6 +26,53 @@ public class AddUserView extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         userDialogController = new UserDialogController(this);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        incomeAccountName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
+                "approved", "pending", "blocked", "rejected"
+        }));
+        jLabel10.setVisible(false);
+        incomeAccountName.setVisible(false);
+    }
+
+    public AddUserView(User user) {
+        this(); // Calls the default constructor to initialize components
+        this.userToEdit = user;
+        jLabel10.setVisible(true);
+        incomeAccountName.setVisible(true);
+        populateFields();
+        updateForEditMode();
+    }
+
+    private void updateForEditMode() {
+        if (userToEdit != null) {
+            setTitle("Edit User"); // Change the title for edit mode
+            jButton1.setText("Update"); // Change the button text for edit mode
+        }
+    }
+
+    private void populateFields() {
+        if (userToEdit != null) {
+            name.setText(userToEdit.getName());
+            username.setText(userToEdit.getUsername());
+            email.setText(userToEdit.getEmail());
+            password.setText(""); // Do not populate password for security reasons
+            jRadioButton1.setSelected(userToEdit.getRoleName().equals("Admin"));
+            jRadioButton2.setSelected(userToEdit.getRoleName().equals("Member"));
+            incomeAccountName.setSelectedItem(userToEdit.getStatus());
+        }
+    }
+
+    public User getUpdatedUser() {
+        if (userToEdit != null) {
+            userToEdit.setName(name.getText());
+            userToEdit.setUsername(username.getText());
+            userToEdit.setEmail(email.getText());
+            userToEdit.setPassword(new String(password.getPassword()));
+            userToEdit.setRoleId(jRadioButton1.isSelected() ? 1 : 2);
+            userToEdit.setStatus((String) incomeAccountName.getSelectedItem()); // Get the status from the dropdown
+            userToEdit.setCreatedAt(new Timestamp(System.currentTimeMillis())); // Update timestamp
+        }
+        return userToEdit;
     }
 
     /**
@@ -31,9 +82,12 @@ public class AddUserView extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // <editor-fold defaultstate="collapsed" desc="Generated
     // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         Right = new javax.swing.JPanel();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton1 = new javax.swing.JRadioButton();
@@ -48,11 +102,14 @@ public class AddUserView extends javax.swing.JFrame {
         username = new javax.swing.JTextField();
         email = new javax.swing.JTextField();
         password = new javax.swing.JPasswordField();
+        incomeAccountName = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         Right.setBackground(new java.awt.Color(255, 255, 255));
 
+        buttonGroup1.add(jRadioButton2);
         jRadioButton2.setSelected(true);
         jRadioButton2.setText("Member");
         jRadioButton2.setBorder(null);
@@ -64,6 +121,7 @@ public class AddUserView extends javax.swing.JFrame {
             }
         });
 
+        buttonGroup1.add(jRadioButton1);
         jRadioButton1.setText("Admin");
         jRadioButton1.setBorder(null);
         jRadioButton1.setContentAreaFilled(false);
@@ -129,6 +187,16 @@ public class AddUserView extends javax.swing.JFrame {
             }
         });
 
+        incomeAccountName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--" }));
+        incomeAccountName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                incomeAccountNameActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel10.setText("Status");
+
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);
         RightLayout.setHorizontalGroup(
@@ -143,12 +211,6 @@ public class AddUserView extends javax.swing.JFrame {
                                                 .addGap(83, 83, 83)
                                                 .addGroup(RightLayout
                                                         .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(RightLayout.createSequentialGroup()
-                                                                .addComponent(jLabel9)
-                                                                .addGap(18, 18, 18)
-                                                                .addComponent(jRadioButton1)
-                                                                .addGap(18, 18, 18)
-                                                                .addComponent(jRadioButton2))
                                                         .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE,
                                                                 340, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(email, javax.swing.GroupLayout.PREFERRED_SIZE,
@@ -161,20 +223,31 @@ public class AddUserView extends javax.swing.JFrame {
                                                                 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(jLabel5)
                                                         .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                340, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(RightLayout.createSequentialGroup()
+                                                                .addComponent(jLabel9)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(jRadioButton1)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(jRadioButton2))
+                                                        .addGroup(RightLayout.createSequentialGroup()
+                                                                .addGap(131, 131, 131)
+                                                                .addComponent(jButton1,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 94,
+                                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(incomeAccountName,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE, 340,
+                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabel10))
                                                 .addGap(0, 81, Short.MAX_VALUE)))
-                                .addContainerGap())
-                        .addGroup(RightLayout.createSequentialGroup()
-                                .addGap(214, 214, 214)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 94,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+                                .addContainerGap()));
         RightLayout.setVerticalGroup(
                 RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(RightLayout.createSequentialGroup()
-                                .addContainerGap(42, Short.MAX_VALUE)
+                                .addGap(17, 17, 17)
                                 .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25,
+                                        Short.MAX_VALUE)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
@@ -195,14 +268,19 @@ public class AddUserView extends javax.swing.JFrame {
                                 .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel10)
+                                .addGap(4, 4, 4)
+                                .addComponent(incomeAccountName, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel9)
                                         .addComponent(jRadioButton1)
                                         .addComponent(jRadioButton2))
-                                .addGap(27, 27, 27)
+                                .addGap(18, 18, 18)
                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(60, 60, 60)));
+                                .addGap(13, 13, 13)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -230,6 +308,10 @@ public class AddUserView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void incomeAccountNameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_incomeAccountNameActionPerformed
+        // TODO add your handling code here:
+    }// GEN-LAST:event_incomeAccountNameActionPerformed
+
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jRadioButton2ActionPerformed
         // TODO add your handling code here:
     }// GEN-LAST:event_jRadioButton2ActionPerformed
@@ -256,8 +338,26 @@ public class AddUserView extends javax.swing.JFrame {
         String selectedRole = getSelectedRole();
 
         if (selectedRole != null) {
-            int roleId = selectedRole.equals("Member") ? 1 : 2;
-            userDialogController.addUser(name1, username1, email1, password1, roleId);
+            int roleId = selectedRole.equals("Admin") ? 1 : 2;
+
+            if (userToEdit != null) {
+                // Update the user
+                int userId = userToEdit.getId(); // You need a method to get the current user's ID
+                User editedUser = new User();
+                editedUser.setId(userId);
+                editedUser.setName(name1);
+                editedUser.setUsername(username1);
+                editedUser.setEmail(email1); // Set email
+                editedUser.setPassword(password1);
+                editedUser.setRoleId(roleId); // Set role ID based on radio button selection
+                editedUser.setStatus((String) incomeAccountName.getSelectedItem()); // Get the status from the dropdown
+                editedUser.setOwnerId(null); // o
+                // User editedUser = User(userId, name1, username1, email1, password1, roleId);
+                userDialogController.updateUser(editedUser, userToEdit);
+            } else {
+                // Add a new user
+                userDialogController.addUser(name1, username1, email1, password1, roleId);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Please select a role.");
         }
@@ -329,8 +429,11 @@ public class AddUserView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Right;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JTextField email;
+    private javax.swing.JComboBox<String> incomeAccountName;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

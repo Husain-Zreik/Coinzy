@@ -55,26 +55,84 @@ public class UserProvider {
         return false;
     }
 
-    // Update a user with created_at attribute
-    public boolean updateUser(User user) {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "UPDATE users SET name = ?, email = ?, username = ?, password = ?, role_id = ?, status = ?, owner_id = ?, created_at = ? WHERE id = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, user.getName());
-                pstmt.setString(2, user.getEmail());
-                pstmt.setString(3, user.getUsername());
-                pstmt.setString(4, hashPassword(user.getPassword())); // Hash the password
-                pstmt.setInt(5, user.getRoleId());
-                pstmt.setString(6, user.getStatus());
-                pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
-                pstmt.setTimestamp(8, user.getCreatedAt()); // Update created_at timestamp
-                pstmt.setInt(9, user.getId());
+    public boolean updateUser(User user, User oldUser) {
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE users SET ");
+        List<Object> parameters = new ArrayList<>();
 
-                int rowsUpdated = pstmt.executeUpdate();
-                return rowsUpdated > 0;
+        // Debugging
+        System.out.println("Old User: " + oldUser);
+        System.out.println("New User: " + user);
+
+        if (!user.getName().equals(oldUser.getName()) && (user.getName() != null && !user.getName().isEmpty())) {
+            sqlBuilder.append("name = ?, ");
+            parameters.add(user.getName());
+            System.out.println("Name changed from: " + oldUser.getName() + " to: " + user.getName());
+        }
+        if (!user.getEmail().equals(oldUser.getEmail()) && (user.getEmail() != null && !user.getEmail().isEmpty())) {
+            sqlBuilder.append("email = ?, ");
+            parameters.add(user.getEmail());
+            System.out.println("Email changed from: " + oldUser.getEmail() + " to: " + user.getEmail());
+        }
+        if (!user.getUsername().equals(oldUser.getUsername())
+                && (user.getUsername() != null && !user.getUsername().isEmpty())) {
+            sqlBuilder.append("username = ?, ");
+            parameters.add(user.getUsername());
+            System.out.println("Username changed from: " + oldUser.getUsername() + " to: " + user.getUsername());
+        }
+        if (!user.getPassword().equals(oldUser.getPassword())
+                && (user.getPassword() != null && !user.getPassword().isEmpty())) {
+            sqlBuilder.append("password = ?, ");
+            parameters.add(hashPassword(user.getPassword()));
+            System.out.println("Password changed");
+        }
+        if (user.getRoleId() != oldUser.getRoleId() && user.getRoleId() > 0) {
+            sqlBuilder.append("role_id = ?, ");
+            parameters.add(user.getRoleId());
+            System.out.println("Role ID changed from: " + oldUser.getRoleId() + " to: " + user.getRoleId());
+        }
+        if (!user.getStatus().equals(oldUser.getStatus())
+                && (user.getStatus() != null && !user.getStatus().isEmpty())) {
+            sqlBuilder.append("status = ?, ");
+            parameters.add(user.getStatus());
+            System.out.println("Status changed from: " + oldUser.getStatus() + " to: " + user.getStatus());
+        }
+        if ((user.getOwnerId() == null && oldUser.getOwnerId() != null) ||
+                (user.getOwnerId() != null && !user.getOwnerId().equals(oldUser.getOwnerId()))) {
+            sqlBuilder.append("owner_id = ?, ");
+            parameters.add(user.getOwnerId());
+            System.out.println("Owner ID changed from: " + oldUser.getOwnerId() + " to: " + user.getOwnerId());
+        }
+        if (user.getCreatedAt() != null && !user.getCreatedAt().equals(oldUser.getCreatedAt())) {
+            sqlBuilder.append("created_at = ?, ");
+            parameters.add(user.getCreatedAt());
+            System.out.println("Created At changed from: " + oldUser.getCreatedAt() + " to: " + user.getCreatedAt());
+        }
+
+        if (parameters.isEmpty()) {
+            System.out.println("No changes to update");
+            return false;
+        }
+
+        sqlBuilder.setLength(sqlBuilder.length() - 2);
+        sqlBuilder.append(" WHERE id = ?");
+        parameters.add(user.getId());
+
+        String sql = sqlBuilder.toString();
+        System.out.println("SQL Query: " + sql);
+        System.out.println("Parameters: " + parameters);
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                pstmt.setObject(i + 1, parameters.get(i));
             }
+
+            int rowsUpdated = pstmt.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated);
+            return rowsUpdated > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "SQL error occurred during user update", e);
+            System.out.println("SQL error occurred: " + e.getMessage());
         }
         return false;
     }

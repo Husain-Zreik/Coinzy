@@ -24,8 +24,8 @@ public class ManagementController {
     }
 
     // Edit an existing user
-    public boolean editUser(User user) {
-        return userProvider.updateUser(user);
+    public boolean editUser(User user,User oldUser) {
+        return userProvider.updateUser(user,oldUser);
     }
 
     // Delete a user
