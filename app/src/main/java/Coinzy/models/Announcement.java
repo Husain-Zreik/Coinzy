@@ -6,21 +6,8 @@ public class Announcement {
     private int id;
     private String title;
     private String message;
-    private int createdBy;
+    private String createdBy; // Changed from int to String
     private Timestamp timestamp;
-
-    // Default constructor
-    public Announcement() {
-    }
-
-    // Parameterized constructor
-    public Announcement(int id, String title, String message, int createdBy, Timestamp timestamp) {
-        this.id = id;
-        this.title = title;
-        this.message = message;
-        this.createdBy = createdBy;
-        this.timestamp = timestamp;
-    }
 
     // Getters and Setters
     public int getId() {
@@ -47,11 +34,11 @@ public class Announcement {
         this.message = message;
     }
 
-    public int getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(int createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 

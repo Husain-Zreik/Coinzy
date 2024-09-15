@@ -16,7 +16,6 @@ import Coinzy.controllers.admin.OverviewController;
 public class OverviewPanel extends JPanel {
     private JLabel totalUsersLabel;
     private JLabel pendingRequestsLabel;
-    private JLabel totalTransactionsLabel;
     private JLabel revenueLabel;
     private JLabel expensesLabel;
     private JLabel rejectedUsersLabel;
@@ -43,14 +42,12 @@ public class OverviewPanel extends JPanel {
         chartPanel.add(createChartPanel(), BorderLayout.CENTER);
 
         // Create bottom panel for statistics cards
-        statsPanel = new JPanel(new GridLayout(3, 2, 20, 20));
+        statsPanel = new JPanel(new GridLayout(0, 3, 20, 20)); // Set 3 columns, dynamic row count
         statsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding around grid
 
         // Create and add statistic cards
         addCard("Total Users", totalUsersLabel = createStatLabel(), "Users", statsPanel);
         addCard("Pending Requests", pendingRequestsLabel = createStatLabel(), "Requests", statsPanel);
-        addCard("Total Transactions", totalTransactionsLabel = createStatLabel(), "Transactions", statsPanel);
-
         addCard("Rejected Users", rejectedUsersLabel = createStatLabel(), "RejectedUsers", statsPanel);
         addCard("Blocked Users", blockedUsersLabel = createStatLabel(), "BlockedUsers", statsPanel);
         addCard("Total Revenue", revenueLabel = createStatLabel(), "Revenue", statsPanel);
@@ -77,11 +74,37 @@ public class OverviewPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    private void addCard(String titleText, JLabel statLabel, String iconName, JPanel parentPanel) {
+        JPanel cardPanel = new JPanel(new BorderLayout());
+        cardPanel.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY)); // Rounded border
+        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setPreferredSize(new Dimension(150, 80)); // Adjusted smaller size for the cards
+
+        // Icon for the card
+        ImageIcon icon = new ImageIcon("resources/icons/" + iconName + ".png");
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel titleLabel = new JLabel(titleText);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14)); // Adjust font size to fit smaller card
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align text
+
+        // Center the text and icon in the card
+        JPanel textPanel = new JPanel(new GridLayout(2, 1));
+        textPanel.add(titleLabel);
+        textPanel.add(statLabel);
+        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding inside text panel
+
+        cardPanel.add(iconLabel, BorderLayout.WEST);
+        cardPanel.add(textPanel, BorderLayout.CENTER);
+
+        parentPanel.add(cardPanel); // Add the card to the parent panel
+    }
+
     private void loadStatistics() {
         // Fetch statistics from the controller and set them in the labels
         totalUsersLabel.setText(String.valueOf(overviewController.getTotalUsers()));
         pendingRequestsLabel.setText(String.valueOf(overviewController.getPendingRequests()));
-        totalTransactionsLabel.setText(String.valueOf(overviewController.getTotalTransactions()));
         rejectedUsersLabel.setText(String.valueOf(overviewController.getRejectedUsersCount()));
         blockedUsersLabel.setText(String.valueOf(overviewController.getBlockedUsersCount()));
         revenueLabel.setText(formatCurrency(overviewController.getTotalRevenue()));
@@ -103,34 +126,6 @@ public class OverviewPanel extends JPanel {
         label.setFont(new Font("Arial", Font.BOLD, 20)); // Modern font for stats
         label.setHorizontalAlignment(SwingConstants.CENTER); // Center align text
         return label;
-    }
-
-    // Add a statistic card without click functionality
-    private void addCard(String titleText, JLabel statLabel, String iconName, JPanel parentPanel) {
-        JPanel cardPanel = new JPanel(new BorderLayout());
-        cardPanel.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY)); // Rounded border
-        cardPanel.setBackground(Color.WHITE);
-        cardPanel.setPreferredSize(new Dimension(200, 100));
-
-        // Icon for the card
-        ImageIcon icon = new ImageIcon("resources/icons/" + iconName + ".png");
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JLabel titleLabel = new JLabel(titleText);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16)); // Modern font for titles
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align text
-
-        // Center the text and icon in the card
-        JPanel textPanel = new JPanel(new GridLayout(2, 1));
-        textPanel.add(titleLabel);
-        textPanel.add(statLabel);
-        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding inside text panel
-
-        cardPanel.add(iconLabel, BorderLayout.WEST);
-        cardPanel.add(textPanel, BorderLayout.CENTER);
-
-        parentPanel.add(cardPanel); // Add the card to the parent panel
     }
 
     // Format currency values for revenue and expenses
