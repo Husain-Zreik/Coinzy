@@ -53,7 +53,7 @@ public class HomePage extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated
-    // Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jTabbedPane2 = new javax.swing.JTabbedPane();
@@ -196,11 +196,9 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton2MouseClicked(evt);
             }
-
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton2MouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton2MouseExited(evt);
             }
@@ -224,11 +222,9 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton3MouseClicked(evt);
             }
-
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton3MouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton3MouseExited(evt);
             }
@@ -252,11 +248,9 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton4MouseClicked(evt);
             }
-
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton4MouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton4MouseExited(evt);
             }
@@ -272,11 +266,9 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton5MouseClicked(evt);
             }
-
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton5MouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton5MouseExited(evt);
             }
@@ -296,7 +288,6 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButton1MouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton1MouseExited(evt);
             }
@@ -317,11 +308,9 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 nBudgetButtonMouseClicked(evt);
             }
-
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 nBudgetButtonMouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 nBudgetButtonMouseExited(evt);
             }
@@ -337,21 +326,21 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 refreshButtonMouseClicked(evt);
             }
-
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 refreshButtonMouseEntered(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 refreshButtonMouseExited(evt);
             }
         });
-        refreshButton.addActionListener((java.awt.event.ActionEvent evt) -> {
-            refreshButtonActionPerformed(evt);
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
         });
         jPanel1.add(refreshButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 10, 30, 40));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 860, 60));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 860, 70));
 
         jTabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -447,15 +436,16 @@ public class HomePage extends javax.swing.JFrame {
         Home_tab.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 110, 30));
 
         transactionTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {
-                        { null, null, null, null, null, null },
-                        { null, null, null, null, null, null },
-                        { null, null, null, null, null, null },
-                        { null, null, null, null, null, null }
-                },
-                new String[] {
-                        "Transaction Id", "Account Id", "Transaction Type", "Amount", "Statement", "Date"
-                }));
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Transaction Id", "Account Id", "Transaction Type", "Amount", "Statement", "Date"
+            }
+        ));
         jScrollPane3.setViewportView(transactionTable);
 
         Home_tab.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, 790, 150));
@@ -489,14 +479,15 @@ public class HomePage extends javax.swing.JFrame {
         accountTable.setAutoCreateRowSorter(true);
         accountTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         accountTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {
-                        { null, null, null },
-                        { null, null, null },
-                        { null, null, null }
-                },
-                new String[] {
-                        "Account Name", "Current Balance", "Total Expenses"
-                }));
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Account Name", "Current Balance", "Total Expenses"
+            }
+        ));
         accountTable.setGridColor(new java.awt.Color(204, 204, 204));
         accountTable.setRowHeight(24);
         accountTable.setRowSelectionAllowed(false);
@@ -645,15 +636,16 @@ public class HomePage extends javax.swing.JFrame {
         Income_tab.add(incomeSourceTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 220, 140, 30));
 
         incomeTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {
-                        { null, null, null, null },
-                        { null, null, null, null },
-                        { null, null, null, null },
-                        { null, null, null, null }
-                },
-                new String[] {
-                        "Account", "Date", "Source", "Amount"
-                }));
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Account", "Date", "Source", "Amount"
+            }
+        ));
         jScrollPane2.setViewportView(incomeTable);
 
         Income_tab.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, 780, 120));
@@ -766,16 +758,17 @@ public class HomePage extends javax.swing.JFrame {
         Expense_Tab.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, 60, 20));
 
         expenseTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {
-                        { null, null, null, null, null },
-                        { null, null, null, null, null },
-                        { null, null, null, null, null },
-                        { null, null, null, null, null },
-                        { null, null, null, null, null }
-                },
-                new String[] {
-                        "Account", "Category", "Amount", "Date", "Remark"
-                }));
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Account", "Category", "Amount", "Date", "Remark"
+            }
+        ));
         jScrollPane4.setViewportView(expenseTable);
 
         Expense_Tab.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 760, 100));
@@ -809,14 +802,11 @@ public class HomePage extends javax.swing.JFrame {
 
         Budget_tab.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 860, 50));
 
-        jLabel33.setText(
-                "A budget helps users allocate their income to different categories for effective financial management and goal achievement.");
+        jLabel33.setText("A budget helps users allocate their income to different categories for effective financial management and goal achievement.");
         Budget_tab.add(jLabel33, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
 
-        BudgetExpenseCategoryComboBox
-                .setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--", " " }));
-        Budget_tab.add(BudgetExpenseCategoryComboBox,
-                new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 140, 30));
+        BudgetExpenseCategoryComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--", " " }));
+        Budget_tab.add(BudgetExpenseCategoryComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 140, 30));
 
         removeBudgetComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--" }));
         Budget_tab.add(removeBudgetComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 350, 140, 30));
@@ -833,8 +823,7 @@ public class HomePage extends javax.swing.JFrame {
         jLabel36.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel36.setText("Add New Category");
         Budget_tab.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 130, 140, 30));
-        Budget_tab.add(BudgetExpenseCategoryTextField,
-                new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 170, 130, 30));
+        Budget_tab.add(BudgetExpenseCategoryTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 170, 130, 30));
 
         addBudgetExpenseCategoryButton.setBackground(new java.awt.Color(55, 98, 217));
         addBudgetExpenseCategoryButton.setForeground(new java.awt.Color(255, 255, 255));
@@ -844,8 +833,7 @@ public class HomePage extends javax.swing.JFrame {
                 addBudgetExpenseCategoryButtonActionPerformed(evt);
             }
         });
-        Budget_tab.add(addBudgetExpenseCategoryButton,
-                new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 170, 70, 30));
+        Budget_tab.add(addBudgetExpenseCategoryButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 170, 70, 30));
 
         jLabel37.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel37.setText("Remove Budget");
@@ -899,15 +887,16 @@ public class HomePage extends javax.swing.JFrame {
         Budget_tab.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 400, -1, -1));
 
         budgetTable.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {
-                        { null, null },
-                        { null, null },
-                        { null, null },
-                        { null, null }
-                },
-                new String[] {
-                        "Expense Category", "Amount"
-                }));
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Expense Category", "Amount"
+            }
+        ));
         jScrollPane7.setViewportView(budgetTable);
 
         Budget_tab.add(jScrollPane7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 430, 770, 140));
