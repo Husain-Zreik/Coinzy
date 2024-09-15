@@ -35,7 +35,7 @@ public class AddUserView extends javax.swing.JFrame {
     }
 
     public AddUserView(User user) {
-        this(); // Calls the default constructor to initialize components
+        this();
         this.userToEdit = user;
         jLabel10.setVisible(true);
         incomeAccountName.setVisible(true);
@@ -45,8 +45,8 @@ public class AddUserView extends javax.swing.JFrame {
 
     private void updateForEditMode() {
         if (userToEdit != null) {
-            setTitle("Edit User"); // Change the title for edit mode
-            jButton1.setText("Update"); // Change the button text for edit mode
+            setTitle("Edit User");
+            jButton1.setText("Update");
         }
     }
 
@@ -55,7 +55,7 @@ public class AddUserView extends javax.swing.JFrame {
             name.setText(userToEdit.getName());
             username.setText(userToEdit.getUsername());
             email.setText(userToEdit.getEmail());
-            password.setText(""); // Do not populate password for security reasons
+            password.setText("");
             jRadioButton1.setSelected(userToEdit.getRoleName().equals("Admin"));
             jRadioButton2.setSelected(userToEdit.getRoleName().equals("Member"));
             incomeAccountName.setSelectedItem(userToEdit.getStatus());
@@ -69,8 +69,8 @@ public class AddUserView extends javax.swing.JFrame {
             userToEdit.setEmail(email.getText());
             userToEdit.setPassword(new String(password.getPassword()));
             userToEdit.setRoleId(jRadioButton1.isSelected() ? 1 : 2);
-            userToEdit.setStatus((String) incomeAccountName.getSelectedItem()); // Get the status from the dropdown
-            userToEdit.setCreatedAt(new Timestamp(System.currentTimeMillis())); // Update timestamp
+            userToEdit.setStatus((String) incomeAccountName.getSelectedItem());
+            userToEdit.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         }
         return userToEdit;
     }
@@ -342,20 +342,17 @@ public class AddUserView extends javax.swing.JFrame {
 
             if (userToEdit != null) {
                 // Update the user
-                int userId = userToEdit.getId(); // You need a method to get the current user's ID
+                int userId = userToEdit.getId();
                 User editedUser = new User();
                 editedUser.setId(userId);
                 editedUser.setName(name1);
                 editedUser.setUsername(username1);
-                editedUser.setEmail(email1); // Set email
+                editedUser.setEmail(email1);
                 editedUser.setPassword(password1);
-                editedUser.setRoleId(roleId); // Set role ID based on radio button selection
-                editedUser.setStatus((String) incomeAccountName.getSelectedItem()); // Get the status from the dropdown
-                editedUser.setOwnerId(null); // o
-                // User editedUser = User(userId, name1, username1, email1, password1, roleId);
+                editedUser.setRoleId(roleId);
+                editedUser.setStatus((String) incomeAccountName.getSelectedItem());
                 userDialogController.updateUser(editedUser, userToEdit);
             } else {
-                // Add a new user
                 userDialogController.addUser(name1, username1, email1, password1, roleId);
             }
         } else {

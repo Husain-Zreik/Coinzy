@@ -44,21 +44,19 @@ public class UserDialogController {
                 return;
             }
 
-            // Create User object
             User user = new User();
             user.setName(name);
             user.setUsername(username);
-            user.setEmail(email); // Set email
+            user.setEmail(email);
             user.setPassword(password);
-            user.setRoleId(roleId); // Set role ID based on radio button selection
-            user.setStatus("approved"); // Assuming status for new users is "active"
-            user.setOwnerId(null); // or set to appropriate value if applicable
+            user.setRoleId(roleId);
+            user.setStatus("approved");
 
             boolean success = userProvider.createUser(user);
             if (success) {
                 view.clearFields();
                 JOptionPane.showMessageDialog(view, "User successfully added!");
-                view.dispose(); // Close the dialog
+                view.dispose();
             } else {
                 view.displayError("Error adding user.");
             }

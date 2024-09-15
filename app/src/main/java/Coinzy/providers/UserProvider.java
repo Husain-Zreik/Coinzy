@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,7 +34,7 @@ public class UserProvider {
 
     public boolean createUser(User user) {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO users (name, email, username, password, role_id, status, owner_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO users (name, email, username, password, role_id, status, created_at) VALUES (?, ?, ?, ?, ?, ?,  ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, user.getName());
                 pstmt.setString(2, user.getEmail());
@@ -43,8 +42,7 @@ public class UserProvider {
                 pstmt.setString(4, hashPassword(user.getPassword())); // Hash the password
                 pstmt.setInt(5, user.getRoleId());
                 pstmt.setString(6, user.getStatus());
-                pstmt.setObject(7, user.getOwnerId(), Types.INTEGER);
-                pstmt.setTimestamp(8, new Timestamp(System.currentTimeMillis())); // Set the current time if null
+                pstmt.setTimestamp(7, new Timestamp(System.currentTimeMillis())); // Set the current time if null
 
                 int rowsInserted = pstmt.executeUpdate();
                 return rowsInserted > 0;
@@ -95,12 +93,6 @@ public class UserProvider {
             sqlBuilder.append("status = ?, ");
             parameters.add(user.getStatus());
             System.out.println("Status changed from: " + oldUser.getStatus() + " to: " + user.getStatus());
-        }
-        if ((user.getOwnerId() == null && oldUser.getOwnerId() != null) ||
-                (user.getOwnerId() != null && !user.getOwnerId().equals(oldUser.getOwnerId()))) {
-            sqlBuilder.append("owner_id = ?, ");
-            parameters.add(user.getOwnerId());
-            System.out.println("Owner ID changed from: " + oldUser.getOwnerId() + " to: " + user.getOwnerId());
         }
         if (user.getCreatedAt() != null && !user.getCreatedAt().equals(oldUser.getCreatedAt())) {
             sqlBuilder.append("created_at = ?, ");
@@ -391,7 +383,6 @@ public class UserProvider {
                 rs.getString("password"),
                 rs.getInt("role_id"),
                 rs.getString("status"),
-                (Integer) rs.getObject("owner_id"),
-                rs.getTimestamp("created_at")); // Ensure created_at is treated as a Timestamp
+                rs.getTimestamp("created_at"));
     }
 }

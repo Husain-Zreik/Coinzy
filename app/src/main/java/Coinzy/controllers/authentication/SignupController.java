@@ -15,7 +15,7 @@ public class SignupController {
     private static final Logger logger = Logger.getLogger(SignupController.class.getName());
     private final SignupView view;
     private final UserProvider userProvider;
-    private LoginView loginView; // Added LoginView instance
+    private LoginView loginView;
 
     public SignupController(SignupView view) {
         this.view = view;
@@ -54,11 +54,10 @@ public class SignupController {
             User user = new User();
             user.setName(name);
             user.setUsername(username);
-            user.setEmail(email); // Set email
+            user.setEmail(email);
             user.setPassword(password);
-            user.setRoleId(roleId); // Set role ID based on radio button selection
+            user.setRoleId(roleId);
             user.setStatus("pending");
-            user.setOwnerId(null); // or set to appropriate value if applicable
 
             boolean success = userProvider.createUser(user);
             if (success) {
@@ -66,11 +65,11 @@ public class SignupController {
                 JOptionPane.showMessageDialog(view, "Account successfully created!");
 
                 if (loginView != null) {
-                    loginView.setVisible(true); // Show the login view
+                    loginView.setVisible(true);
                     loginView.pack();
                     loginView.setLocationRelativeTo(null);
                 }
-                view.dispose(); // Close the signup view
+                view.dispose();
             } else {
                 view.displayError("Error creating account.");
             }

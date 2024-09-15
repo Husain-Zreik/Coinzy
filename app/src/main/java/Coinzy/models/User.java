@@ -10,8 +10,7 @@ public class User {
     private String password;
     private int roleId;
     private String status;
-    private Integer ownerId;
-    private Timestamp createdAt; // New attribute to track user creation time
+    private Timestamp createdAt;
 
     // Default constructor
     public User() {
@@ -19,7 +18,7 @@ public class User {
 
     // Parameterized constructor
     public User(int id, String name, String email, String username, String password, int roleId, String status,
-            Integer ownerId, Timestamp createdAt) {
+            Timestamp createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -27,8 +26,7 @@ public class User {
         this.password = password;
         this.roleId = roleId;
         this.status = status;
-        this.ownerId = ownerId;
-        this.createdAt = createdAt; // Initialize the new attribute
+        this.createdAt = createdAt;
     }
 
     // Getters and Setters
@@ -79,8 +77,7 @@ public class User {
     public String getRoleName() {
         return switch (roleId) {
             case 1 -> "Admin";
-            case 2 -> "Manager";
-            case 3 -> "Member";
+            case 2 -> "Member";
             default -> "Unknown";
         };
     }
@@ -95,14 +92,6 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public Integer getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
     }
 
     public Timestamp getCreatedAt() {
@@ -123,7 +112,6 @@ public class User {
                 ", password='" + password + '\'' +
                 ", roleId=" + roleId +
                 ", status='" + status + '\'' +
-                ", ownerId=" + ownerId +
                 ", createdAt=" + createdAt +
                 '}';
     }
