@@ -135,14 +135,14 @@ public class TransactionProvider {
         return 0;
     }
 
-    // Get total revenue from completed transactions
+    // Get total revenue (income) from transactions
     public double getTotalRevenue() {
-        String sql = "SELECT SUM(amount) FROM transactions WHERE transaction_type = 'credit'"; // Adjust as needed
+        String sql = "SELECT SUM(amount) FROM transactions WHERE type = 'Income'";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
-                return rs.getDouble(1);
+                return rs.getDouble(1); // Get the sum of income transactions
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQL error occurred when fetching total revenue", e);
@@ -150,14 +150,14 @@ public class TransactionProvider {
         return 0.0;
     }
 
-    // Get total expenses from transactions (assuming 'debit' indicates expenses)
+    // Get total expenses from transactions
     public double getTotalExpenses() {
-        String sql = "SELECT SUM(amount) FROM transactions WHERE transaction_type = 'debit'"; // Adjust as needed
+        String sql = "SELECT SUM(amount) FROM transactions WHERE type = 'Expense'";
         try (Connection conn = DatabaseManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
-                return rs.getDouble(1);
+                return rs.getDouble(1); // Get the sum of expense transactions
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "SQL error occurred when fetching total expenses", e);

@@ -90,10 +90,9 @@ CREATE TABLE transactions (
 CREATE TABLE budgets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    expense_category INT,
+    expense_category VARCHAR(100),
     amount DECIMAL(10, 2),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (expense_category) REFERENCES expense_categories(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Create the target_amounts table with ON DELETE CASCADE
@@ -151,41 +150,147 @@ END;
 //
 
 DELIMITER ;
+-- Ensure bcrypt is used to hash the password for 'huzk'
+-- Seed initial users with different statuses and 'created_at' dates
 
--- Seeder Script for Populating the Database with Users
--- Seed random users with different created_at dates
-INSERT INTO users (name, email, username, password, role_id, status, created_at) VALUES
-('Alice Johnson', 'alice1@example.com', 'alice1', 'password123', 2, 'approved', '2024-01-15 08:30:00'),
-('Bob Smith', 'bobsmith@example.com', 'bobsmith', 'password123', 2, 'pending', '2024-02-10 09:00:00'),
-('Carol Davis', 'caroldavis@example.com', 'carold', 'password123', 2, 'approved', '2024-03-05 12:45:00'),
-('David Evans', 'davide@example.com', 'davidevans', 'password123', 2, 'rejected', '2024-04-12 13:30:00'),
-('Emily Harris', 'emilyh@example.com', 'emilyh', 'password123', 2, 'blocked', '2024-05-20 10:15:00'),
-('Frank Green', 'frankg@example.com', 'frankg', 'password123', 2, 'approved', '2024-06-07 11:50:00'),
--- Add additional users as needed here
--- For example, add more users with different dates and statuses.
+-- Update user with id 1
+UPDATE users 
+SET username = 'huzk', 
+    password = '$2a$10$wIjKl5Krw.qjVu6F/2uy9O2IXyOh5eYl0wM6Rq.p8vCQX3/rUL.s2' -- bcrypt hash for 'p@ssword'
+WHERE id = 1;
 
--- Example to insert random users with random dates using a loop
+-- Seed additional users with random dates and statuses
 DELIMITER //
-
-CREATE PROCEDURE seed_users()
+CREATE PROCEDURE seed_more_users()
 BEGIN
-    DECLARE i INT DEFAULT 7;  -- Starting from 7 as we've already added some users
-    WHILE i <= 30 DO
+    DECLARE i INT DEFAULT 2;
+    DECLARE status VARCHAR(10);
+    WHILE i <= 50 DO
+        -- Assign random statuses
+        SET status = CASE 
+            WHEN i % 4 = 0 THEN 'approved' 
+            WHEN i % 4 = 1 THEN 'pending' 
+            WHEN i % 4 = 2 THEN 'blocked' 
+            ELSE 'rejected' 
+        END;
+        
+        -- Insert user with hashed password
         INSERT INTO users (name, email, username, password, role_id, status, created_at)
         VALUES (
             CONCAT('User', i),
             CONCAT('user', i, '@example.com'),
             CONCAT('user', i),
-            'password123',
+            '$2a$10$wIjKl5Krw.qjVu6F/2uy9O2IXyOh5eYl0wM6Rq.p8vCQX3/rUL.s2', -- bcrypt hash of 'password123'
             2,
-            'approved',
+            status,
             DATE_ADD('2024-01-01', INTERVAL FLOOR(RAND() * 365) DAY)
         );
         SET i = i + 1;
     END WHILE;
 END //
-
 DELIMITER ;
 
--- Call the seeder procedure to populate with random users
-CALL seed_users();
+-- Call the procedure to populate with 50 users
+CALL seed_more_users();
+
+
+-- Insert at least 10 records into accounts table
+INSERT INTO accounts (user_id, account_type, balance, liabilities) 
+VALUES 
+(1, 'Savings', 1000.00, 200.00),
+(2, 'Savings', 500.00, 150.00),
+(3, 'Current', 300.00, 100.00),
+(4, 'Savings', 400.00, 50.00),
+(5, 'Current', 200.00, 300.00),
+(6, 'Savings', 800.00, 120.00),
+(7, 'Savings', 100.00, 10.00),
+(8, 'Current', 900.00, 400.00),
+(9, 'Savings', 600.00, 100.00),
+(10, 'Current', 700.00, 250.00);
+
+-- Insert at least 10 records into income_sources table
+INSERT INTO income_sources (user_id, source_name) 
+VALUES 
+(1, 'Salary'),
+(2, 'Freelancing'),
+(3, 'Investment'),
+(4, 'Rental'),
+(5, 'Part-time Job'),
+(6, 'Dividends'),
+(7, 'Consulting'),
+(8, 'Business'),
+(9, 'Grants'),
+(10, 'Pension');
+
+-- Insert at least 10 records into incomes table
+INSERT INTO incomes (user_id, account_id, income_date, income_source, amount) 
+VALUES 
+(1, 1, '2024-01-10', 'Salary', 1000.00),
+(2, 2, '2024-02-12', 'Freelancing', 500.00),
+(3, 3, '2024-03-15', 'Investment', 300.00),
+(4, 4, '2024-04-18', 'Rental', 400.00),
+(5, 5, '2024-05-22', 'Part-time Job', 200.00),
+(6, 6, '2024-06-25', 'Dividends', 800.00),
+(7, 7, '2024-07-28', 'Consulting', 100.00),
+(8, 8, '2024-08-30', 'Business', 900.00),
+(9, 9, '2024-09-10', 'Grants', 600.00),
+(10, 10, '2024-10-15', 'Pension', 700.00);
+
+-- Insert at least 10 records into expense_categories table
+INSERT INTO expense_categories (user_id, category_name) 
+VALUES 
+(1, 'Food'),
+(2, 'Transportation'),
+(3, 'Rent'),
+(4, 'Utilities'),
+(5, 'Insurance'),
+(6, 'Entertainment'),
+(7, 'Healthcare'),
+(8, 'Education'),
+(9, 'Clothing'),
+(10, 'Miscellaneous');
+
+-- Insert at least 10 records into expenses table
+INSERT INTO expenses (user_id, account_id, expense_date, expense_category, remark, amount) 
+VALUES 
+(1, 1, '2024-01-15', 'Food', 'Groceries', 100.00),
+(2, 2, '2024-02-20', 'Transportation', 'Gas', 50.00),
+(3, 3, '2024-03-25', 'Rent', 'March Rent', 300.00),
+(4, 4, '2024-04-30', 'Utilities', 'Electricity', 75.00),
+(5, 5, '2024-05-10', 'Insurance', 'Car Insurance', 150.00),
+(6, 6, '2024-06-15', 'Entertainment', 'Movie Night', 20.00),
+(7, 7, '2024-07-20', 'Healthcare', 'Doctor Visit', 100.00),
+(8, 8, '2024-08-25', 'Education', 'Books', 50.00),
+(9, 9, '2024-09-05', 'Clothing', 'New Jacket', 60.00),
+(10, 10, '2024-10-10', 'Miscellaneous', 'Birthday Gift', 40.00);
+
+-- Similarly, insert at least 10 records into the transactions table
+-- These will be automatically handled by the income/expense triggers as data is inserted into incomes and expenses.
+
+-- Insert at least 10 records into budgets table
+INSERT INTO budgets (user_id, expense_category, amount) 
+VALUES 
+(1, 1, 200.00),
+(2, 2, 150.00),
+(3, 3, 400.00),
+(4, 4, 100.00),
+(5, 5, 250.00),
+(6, 6, 300.00),
+(7, 7, 350.00),
+(8, 8, 500.00),
+(9, 9, 100.00),
+(10, 10, 150.00);
+
+-- Insert at least 10 records into target_amounts table
+INSERT INTO target_amounts (user_id, amount) 
+VALUES 
+(1, 1000.00),
+(2, 2000.00),
+(3, 1500.00),
+(4, 1200.00),
+(5, 1800.00),
+(6, 2500.00),
+(7, 800.00),
+(8, 1000.00),
+(9, 2000.00),
+(10, 1500.00);
