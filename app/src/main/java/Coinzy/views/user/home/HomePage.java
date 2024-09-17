@@ -1,20 +1,29 @@
 package Coinzy.views.user.home;
 
 import Coinzy.views.user.chart.IncomeExpenseChart;
+
 import javax.swing.table.DefaultTableModel;
+
 import Coinzy.views.authentication.LoginView;
 import Coinzy.database.DatabaseManager;
+import Coinzy.models.Announcement;
+import Coinzy.providers.AnnouncementProvider;
 import Coinzy.sessions.UserSession;
 
 import java.sql.PreparedStatement;
+
 import javax.swing.JOptionPane;
+
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingConstants;
 
 public class HomePage extends javax.swing.JFrame {
     private static final Logger logger = Logger.getLogger(HomePage.class.getName());
@@ -39,6 +48,30 @@ public class HomePage extends javax.swing.JFrame {
         fillRemoveBudgetComboBox();
         populate_budget();
         updateProgressBar();
+        displayRecentAnnouncements();
+    }
+
+    private void displayRecentAnnouncements() {
+        AnnouncementProvider announcementProvider = new AnnouncementProvider();
+        List<Announcement> recentAnnouncements = announcementProvider.getRecentAnnouncements(10);
+
+        if (!recentAnnouncements.isEmpty()) {
+            StringBuilder announcementsText = new StringBuilder("<html>"); // Start the HTML format
+            for (Announcement announcement : recentAnnouncements) {
+                announcementsText.append("<p style='margin: 0;'>") // Ensure no extra margin
+                        .append(announcement.getMessage()) // Add the message
+                        .append("</p><br>"); // Add line breaks after each message
+            }
+            announcementsText.append("</html>"); // End the HTML format
+
+            jLabel43.setText(announcementsText.toString());
+            jLabel43.setVisible(true);
+            jLabel43.setVerticalAlignment(SwingConstants.TOP); // Align text at the top
+            jLabel43.setHorizontalAlignment(SwingConstants.LEFT); // Align text to the left
+        } else {
+            jLabel43.setVisible(false); // Hide the label
+            jPanel3.setVisible(false); // Hide the panel if no announcements
+        }
     }
 
     /**
@@ -53,7 +86,9 @@ public class HomePage extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jTabbedPane2 = new javax.swing.JTabbedPane();
@@ -93,6 +128,8 @@ public class HomePage extends javax.swing.JFrame {
         jLabel41 = new javax.swing.JLabel();
         jProgressBar1 = new javax.swing.JProgressBar();
         progressLabel = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel43 = new javax.swing.JLabel();
         Account_tab = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -196,9 +233,11 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton2MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton2MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton2MouseExited(evt);
             }
@@ -222,9 +261,11 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton3MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton3MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton3MouseExited(evt);
             }
@@ -248,9 +289,11 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton4MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton4MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton4MouseExited(evt);
             }
@@ -266,9 +309,11 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jToggleButton5MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jToggleButton5MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jToggleButton5MouseExited(evt);
             }
@@ -288,6 +333,7 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButton1MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jButton1MouseExited(evt);
             }
@@ -308,9 +354,11 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 nBudgetButtonMouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 nBudgetButtonMouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 nBudgetButtonMouseExited(evt);
             }
@@ -326,9 +374,11 @@ public class HomePage extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 refreshButtonMouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 refreshButtonMouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 refreshButtonMouseExited(evt);
             }
@@ -340,7 +390,7 @@ public class HomePage extends javax.swing.JFrame {
         });
         jPanel1.add(refreshButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 10, 30, 40));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 860, 70));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 860, 60));
 
         jTabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -367,7 +417,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel7.add(jLabel20);
         jLabel20.setBounds(60, 10, 70, 60);
 
-        Home_tab.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 190, 150));
+        Home_tab.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 190, 140));
 
         jPanel6.setBackground(new java.awt.Color(253, 153, 153));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -382,7 +432,7 @@ public class HomePage extends javax.swing.JFrame {
         jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/liabilites.png"))); // NOI18N
         jPanel6.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, 70, 60));
 
-        Home_tab.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 20, 190, 150));
+        Home_tab.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 30, 190, 140));
 
         jPanel8.setBackground(new java.awt.Color(188, 127, 205));
         jPanel8.setLayout(null);
@@ -400,7 +450,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel8.add(jLabel14);
         jLabel14.setBounds(60, 10, 80, 60);
 
-        Home_tab.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 20, 190, 150));
+        Home_tab.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 190, 140));
 
         jPanel9.setBackground(new java.awt.Color(116, 140, 241));
         jPanel9.setLayout(null);
@@ -418,7 +468,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel9.add(jLabel4);
         jLabel4.setBounds(60, 20, 70, 50);
 
-        Home_tab.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 20, 190, 150));
+        Home_tab.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 30, 190, 140));
 
         jButton2.setBackground(new java.awt.Color(55, 98, 217));
         jButton2.setFont(new java.awt.Font("Cascadia Code", 1, 12)); // NOI18N
@@ -429,26 +479,25 @@ public class HomePage extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        Home_tab.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 140, 40));
+        Home_tab.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 140, 40));
 
         jLabel31.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel31.setText("Transactions");
-        Home_tab.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 110, 30));
+        Home_tab.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 110, 30));
 
         transactionTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "Transaction Id", "Account Id", "Transaction Type", "Amount", "Statement", "Date"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null, null, null, null },
+                        { null, null, null, null, null, null },
+                        { null, null, null, null, null, null },
+                        { null, null, null, null, null, null }
+                },
+                new String[] {
+                        "Transaction Id", "Account Id", "Transaction Type", "Amount", "Statement", "Date"
+                }));
         jScrollPane3.setViewportView(transactionTable);
 
-        Home_tab.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, 790, 150));
+        Home_tab.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, 790, 150));
 
         jPanel2.setBackground(new java.awt.Color(214, 214, 214));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -458,13 +507,21 @@ public class HomePage extends javax.swing.JFrame {
         jPanel2.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 20));
 
         jProgressBar1.setForeground(new java.awt.Color(33, 225, 65));
-        jPanel2.add(jProgressBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 180, 20));
+        jPanel2.add(jProgressBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 350, 20));
 
         progressLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         progressLabel.setText("No Data Available");
-        jPanel2.add(progressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, 130, -1));
+        jPanel2.add(progressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 10, 130, -1));
 
-        Home_tab.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 450, 40));
+        Home_tab.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 230, 620, 40));
+
+        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+
+        jLabel43.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel43.setText("hello world");
+        jPanel3.add(jLabel43);
+
+        Home_tab.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 790, 40));
 
         Home_tab_scrollpane.setViewportView(Home_tab);
 
@@ -479,15 +536,14 @@ public class HomePage extends javax.swing.JFrame {
         accountTable.setAutoCreateRowSorter(true);
         accountTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         accountTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Account Name", "Current Balance", "Total Expenses"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null },
+                        { null, null, null },
+                        { null, null, null }
+                },
+                new String[] {
+                        "Account Name", "Current Balance", "Total Expenses"
+                }));
         accountTable.setGridColor(new java.awt.Color(204, 204, 204));
         accountTable.setRowHeight(24);
         accountTable.setRowSelectionAllowed(false);
@@ -636,16 +692,15 @@ public class HomePage extends javax.swing.JFrame {
         Income_tab.add(incomeSourceTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 220, 140, 30));
 
         incomeTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Account", "Date", "Source", "Amount"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null },
+                        { null, null, null, null }
+                },
+                new String[] {
+                        "Account", "Date", "Source", "Amount"
+                }));
         jScrollPane2.setViewportView(incomeTable);
 
         Income_tab.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 470, 780, 120));
@@ -758,17 +813,16 @@ public class HomePage extends javax.swing.JFrame {
         Expense_Tab.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, 60, 20));
 
         expenseTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Account", "Category", "Amount", "Date", "Remark"
-            }
-        ));
+                new Object[][] {
+                        { null, null, null, null, null },
+                        { null, null, null, null, null },
+                        { null, null, null, null, null },
+                        { null, null, null, null, null },
+                        { null, null, null, null, null }
+                },
+                new String[] {
+                        "Account", "Category", "Amount", "Date", "Remark"
+                }));
         jScrollPane4.setViewportView(expenseTable);
 
         Expense_Tab.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 760, 100));
@@ -802,11 +856,14 @@ public class HomePage extends javax.swing.JFrame {
 
         Budget_tab.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 860, 50));
 
-        jLabel33.setText("A budget helps users allocate their income to different categories for effective financial management and goal achievement.");
+        jLabel33.setText(
+                "A budget helps users allocate their income to different categories for effective financial management and goal achievement.");
         Budget_tab.add(jLabel33, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
 
-        BudgetExpenseCategoryComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--", " " }));
-        Budget_tab.add(BudgetExpenseCategoryComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 140, 30));
+        BudgetExpenseCategoryComboBox
+                .setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--", " " }));
+        Budget_tab.add(BudgetExpenseCategoryComboBox,
+                new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, 140, 30));
 
         removeBudgetComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--select--" }));
         Budget_tab.add(removeBudgetComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 350, 140, 30));
@@ -823,7 +880,8 @@ public class HomePage extends javax.swing.JFrame {
         jLabel36.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel36.setText("Add New Category");
         Budget_tab.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 130, 140, 30));
-        Budget_tab.add(BudgetExpenseCategoryTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 170, 130, 30));
+        Budget_tab.add(BudgetExpenseCategoryTextField,
+                new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 170, 130, 30));
 
         addBudgetExpenseCategoryButton.setBackground(new java.awt.Color(55, 98, 217));
         addBudgetExpenseCategoryButton.setForeground(new java.awt.Color(255, 255, 255));
@@ -833,7 +891,8 @@ public class HomePage extends javax.swing.JFrame {
                 addBudgetExpenseCategoryButtonActionPerformed(evt);
             }
         });
-        Budget_tab.add(addBudgetExpenseCategoryButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 170, 70, 30));
+        Budget_tab.add(addBudgetExpenseCategoryButton,
+                new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 170, 70, 30));
 
         jLabel37.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel37.setText("Remove Budget");
@@ -887,16 +946,15 @@ public class HomePage extends javax.swing.JFrame {
         Budget_tab.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 400, -1, -1));
 
         budgetTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Expense Category", "Amount"
-            }
-        ));
+                new Object[][] {
+                        { null, null },
+                        { null, null },
+                        { null, null },
+                        { null, null }
+                },
+                new String[] {
+                        "Expense Category", "Amount"
+                }));
         jScrollPane7.setViewportView(budgetTable);
 
         Budget_tab.add(jScrollPane7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 430, 770, 140));
@@ -905,7 +963,7 @@ public class HomePage extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Budget", Budget_tab_scrollpane);
 
-        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 860, 470));
+        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 860, 510));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -2125,6 +2183,7 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -2137,6 +2196,7 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;

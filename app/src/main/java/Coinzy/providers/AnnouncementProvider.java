@@ -31,6 +31,33 @@ public class AnnouncementProvider {
         }
     }
 
+    public List<Announcement> getRecentAnnouncements(int days) {
+        List<Announcement> announcements = new ArrayList<>();
+        String sql = "SELECT a.id, a.title, a.message, u.name AS created_by, a.timestamp " +
+                "FROM announcements a " +
+                "LEFT JOIN users u ON a.created_by = u.id " +
+                "WHERE a.timestamp >= NOW() - INTERVAL ? DAY";
+
+        try (Connection conn = DatabaseManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, days);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Announcement announcement = new Announcement();
+                announcement.setId(rs.getInt("id"));
+                announcement.setTitle(rs.getString("title"));
+                announcement.setMessage(rs.getString("message"));
+                announcement.setCreatedBy(rs.getString("created_by"));
+                announcement.setTimestamp(rs.getTimestamp("timestamp"));
+                announcements.add(announcement);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "SQL error occurred while fetching recent announcements", e);
+        }
+        return announcements;
+    }
+
     public List<Announcement> getAnnouncements() {
         List<Announcement> announcements = new ArrayList<>();
         String sql = "SELECT a.id, a.title, a.message, u.name AS created_by, a.timestamp " +

@@ -47,7 +47,9 @@ public class AddUserView extends javax.swing.JFrame {
         if (userToEdit != null) {
             setTitle("Edit User");
             jButton1.setText("Update");
+            jLabel4.setText("Edit User");
         }
+        setTitle("Add User");
     }
 
     private void populateFields() {
