@@ -58,7 +58,7 @@ CREATE TABLE incomes (
 CREATE TABLE expense_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    category_name VARCHAR(100) UNIQUE,
+    category_name VARCHAR(100),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -194,94 +194,90 @@ DELIMITER ;
 CALL seed_more_users();
 
 
--- Insert at least 10 records into accounts table
 INSERT INTO accounts (user_id, account_type, balance, liabilities) 
 VALUES 
-(1, 'Savings', 1000.00, 200.00),
-(2, 'Savings', 500.00, 150.00),
-(3, 'Current', 300.00, 100.00),
-(4, 'Savings', 400.00, 50.00),
-(5, 'Current', 200.00, 300.00),
-(6, 'Savings', 800.00, 120.00),
-(7, 'Savings', 100.00, 10.00),
-(8, 'Current', 900.00, 400.00),
-(9, 'Savings', 600.00, 100.00),
-(10, 'Current', 700.00, 250.00);
+(51, 'Sales', 1500.00, 100.00),
+(51, 'Marketing', 1200.00, 50.00),
+(51, 'Operations', 1800.00, 200.00),
+(51, 'Finance', 1300.00, 150.00);
 
--- Insert at least 10 records into income_sources table
 INSERT INTO income_sources (user_id, source_name) 
 VALUES 
-(1, 'Salary'),
-(2, 'Freelancing'),
-(3, 'Investment'),
-(4, 'Rental'),
-(5, 'Part-time Job'),
-(6, 'Dividends'),
-(7, 'Consulting'),
-(8, 'Business'),
-(9, 'Grants'),
-(10, 'Pension');
+(51, 'Salary'),
+(51, 'Freelance Work'),
+(51, 'Investments'),
+(51, 'Rental Income'),
+(51, 'Consulting'),
+(51, 'Dividends'),
+(51, 'Side Job'),
+(51, 'Grants'),
+(51, 'Business Revenue'),
+(51, 'Pension');
 
--- Insert at least 10 records into incomes table
 INSERT INTO incomes (user_id, account_id, income_date, income_source, amount) 
 VALUES 
-(1, 1, '2024-01-10', 'Salary', 1000.00),
-(2, 2, '2024-02-12', 'Freelancing', 500.00),
-(3, 3, '2024-03-15', 'Investment', 300.00),
-(4, 4, '2024-04-18', 'Rental', 400.00),
-(5, 5, '2024-05-22', 'Part-time Job', 200.00),
-(6, 6, '2024-06-25', 'Dividends', 800.00),
-(7, 7, '2024-07-28', 'Consulting', 100.00),
-(8, 8, '2024-08-30', 'Business', 900.00),
-(9, 9, '2024-09-10', 'Grants', 600.00),
-(10, 10, '2024-10-15', 'Pension', 700.00);
+(51, 1, '2024-01-10', 'Salary', 1500.00),
+(51, 1, '2024-01-15', 'Freelance Work', 800.00),
+(51, 1, '2024-02-10', 'Investments', 600.00),
+(51, 1, '2024-02-20', 'Rental Income', 1000.00),
+(51, 2, '2024-03-10', 'Consulting', 1200.00),
+(51, 2, '2024-03-25', 'Dividends', 900.00),
+(51, 2, '2024-04-10', 'Side Job', 300.00),
+(51, 2, '2024-04-20', 'Grants', 500.00),
+(51, 3, '2024-05-10', 'Business Revenue', 2000.00),
+(51, 3, '2024-05-15', 'Pension', 700.00),
+(51, 3, '2024-06-05', 'Part-time Job', 400.00),
+(51, 3, '2024-06-20', 'Royalties', 1000.00),
+(51, 4, '2024-07-10', 'Freelance Projects', 800.00),
+(51, 4, '2024-07-25', 'Savings Interest', 250.00),
+(51, 4, '2024-08-10', 'Contracting Work', 1200.00);
 
--- Insert at least 10 records into expense_categories table
 INSERT INTO expense_categories (user_id, category_name) 
 VALUES 
-(1, 'Food'),
-(2, 'Transportation'),
-(3, 'Rent'),
-(4, 'Utilities'),
-(5, 'Insurance'),
-(6, 'Entertainment'),
-(7, 'Healthcare'),
-(8, 'Education'),
-(9, 'Clothing'),
-(10, 'Miscellaneous');
+(51, 'Groceries'),
+(51, 'Rent'),
+(51, 'Utilities'),
+(51, 'Transportation'),
+(51, 'Insurance'),
+(51, 'Healthcare'),
+(51, 'Entertainment'),
+(51, 'Dining'),
+(51, 'Clothing'),
+(51, 'Gifts');
 
--- Insert at least 10 records into expenses table
 INSERT INTO expenses (user_id, account_id, expense_date, expense_category, remark, amount) 
 VALUES 
-(1, 1, '2024-01-15', 'Food', 'Groceries', 100.00),
-(2, 2, '2024-02-20', 'Transportation', 'Gas', 50.00),
-(3, 3, '2024-03-25', 'Rent', 'March Rent', 300.00),
-(4, 4, '2024-04-30', 'Utilities', 'Electricity', 75.00),
-(5, 5, '2024-05-10', 'Insurance', 'Car Insurance', 150.00),
-(6, 6, '2024-06-15', 'Entertainment', 'Movie Night', 20.00),
-(7, 7, '2024-07-20', 'Healthcare', 'Doctor Visit', 100.00),
-(8, 8, '2024-08-25', 'Education', 'Books', 50.00),
-(9, 9, '2024-09-05', 'Clothing', 'New Jacket', 60.00),
-(10, 10, '2024-10-10', 'Miscellaneous', 'Birthday Gift', 40.00);
+(51, 1, '2024-01-12', 'Groceries', 'Supermarket Shopping', 100.00),
+(51, 1, '2024-01-25', 'Rent', 'Monthly Rent', 800.00),
+(51, 1, '2024-02-05', 'Utilities', 'Electricity Bill', 60.00),
+(51, 1, '2024-02-15', 'Transportation', 'Gas for Car', 50.00),
+(51, 1, '2024-02-28', 'Insurance', 'Car Insurance', 150.00),
+(51, 2, '2024-03-10', 'Healthcare', 'Doctor Visit', 100.00),
+(51, 2, '2024-03-20', 'Entertainment', 'Movie Ticket', 40.00),
+(51, 2, '2024-04-01', 'Dining', 'Dinner at Restaurant', 80.00),
+(51, 2, '2024-04-15', 'Clothing', 'New Jacket', 120.00),
+(51, 2, '2024-05-05', 'Gifts', 'Birthday Gift', 50.00),
+(51, 3, '2024-05-20', 'Travel', 'Flight Ticket', 500.00),
+(51, 3, '2024-06-02', 'Subscriptions', 'Music Subscription', 10.00),
+(51, 3, '2024-06-15', 'Education', 'Online Course', 200.00),
+(51, 4, '2024-07-10', 'Maintenance', 'Car Repair', 250.00),
+(51, 4, '2024-07-25', 'Miscellaneous', 'Miscellaneous Purchase', 30.00);
 
--- Similarly, insert at least 10 records into the transactions table
--- These will be automatically handled by the income/expense triggers as data is inserted into incomes and expenses.
-
--- Insert at least 10 records into budgets table
 INSERT INTO budgets (user_id, expense_category, amount) 
 VALUES 
-(1, 1, 200.00),
-(2, 2, 150.00),
-(3, 3, 400.00),
-(4, 4, 100.00),
-(5, 5, 250.00),
-(6, 6, 300.00),
-(7, 7, 350.00),
-(8, 8, 500.00),
-(9, 9, 100.00),
-(10, 10, 150.00);
+(51, 'Groceries', 500.00),
+(51, 'Rent', 1200.00),
+(51, 'Utilities', 300.00),
+(51, 'Transportation', 200.00),
+(51, 'Insurance', 400.00),
+(51, 'Healthcare', 600.00),
+(51, 'Entertainment', 300.00),
+(51, 'Dining', 200.00),
+(51, 'Clothing', 500.00),
+(51, 'Gifts', 150.00),
+(51, 'Travel', 1000.00);
 
--- Insert at least 10 records into target_amounts table
+
 INSERT INTO target_amounts (user_id, amount) 
 VALUES 
 (1, 1000.00),
@@ -293,4 +289,4 @@ VALUES
 (7, 800.00),
 (8, 1000.00),
 (9, 2000.00),
-(10, 1500.00);
+(51, 1500.00);
